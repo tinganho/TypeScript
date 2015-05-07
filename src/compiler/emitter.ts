@@ -1809,28 +1809,7 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
             }
 
             function emitCallWithSpread(node: CallExpression) {
-                let target: Expression;
-                let expr = skipParentheses(node.expression);
-                if (expr.kind === SyntaxKind.PropertyAccessExpression) {
-                    // Target will be emitted as "this" argument
-                    target = emitCallTarget((<PropertyAccessExpression>expr).expression);
-                    write(".");
-                    emit((<PropertyAccessExpression>expr).name);
-                }
-                else if (expr.kind === SyntaxKind.ElementAccessExpression) {
-                    // Target will be emitted as "this" argument
-                    target = emitCallTarget((<PropertyAccessExpression>expr).expression);
-                    write("[");
-                    emit((<ElementAccessExpression>expr).argumentExpression);
-                    write("]");
-                }
-                else if (expr.kind === SyntaxKind.SuperKeyword) {
-                    target = expr;
-                    write("_super");
-                }
-                else {
-                    emit(node.expression);
-                }
+                let { target } = emitCallOrNewExpressionTarget(node.expression);
                 write(".apply(");
                 if (target) {
                     if (target.kind === SyntaxKind.SuperKeyword) {
@@ -1881,13 +1860,72 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
                 }
             }
 
+            function emitCallOrNewExpressionTarget(node: Expression): CallTarget {
+                node = skipParentheses(node);
+                let target: Expression;
+                let accessor: Expression;
+                if (node.kind === SyntaxKind.PropertyAccessExpression) {
+                    // Target will be emitted as "this" argument
+                    target = emitCallTarget((<PropertyAccessExpression>node).expression);
+                    accessor = (<PropertyAccessExpression>node).name;
+                    write(".");
+                    emit(accessor);
+                }
+                else if (node.kind === SyntaxKind.ElementAccessExpression) {
+                    // Target will be emitted as "this" argument
+                    target = emitCallTarget((<PropertyAccessExpression>node).expression);
+                    accessor = (<ElementAccessExpression>node).argumentExpression;
+                    write("[");
+                    emit(accessor);
+                    write("]");
+                }
+                else if (node.kind === SyntaxKind.SuperKeyword) {
+                    target = node;
+                    write("_super");
+                }
+                else {
+                    emit(node);
+                }
+                return { target, accessor };
+            }
+
             function emitNewExpression(node: NewExpression) {
                 write("new ");
-                emit(node.expression);
-                if (node.arguments) {
-                    write("(");
-                    emitCommaList(node.arguments);
-                    write(")");
+
+                // Spread operator logic can be supported in new expressions in ES5 using a combination
+                // of Function.prototype.bind() and Function.prototype.apply().
+                //
+                //     Example:
+                //
+                //         var arguments = [1, 2, 3, 4, 5];
+                //         new (Array.bind.apply(Array, [null].concat(arguments)));
+                //
+                if (languageVersion === ScriptTarget.ES5 &&
+                    node.arguments &&
+                    hasSpreadElement(node.arguments)) {
+
+                    write('(');
+                    let { target, accessor } = emitCallOrNewExpressionTarget(node.expression);
+                    write('.bind.apply(');
+                    if(target) {
+                        emit(target);
+                        write('.');
+                        emit(accessor);
+                    }
+                    else {
+                        emit(node.expression);
+                    }
+                    write(', [null].concat(');
+                    emitListWithSpread(node.arguments, /*multiline*/false, /*trailingComma*/false);
+                    write(')))');
+                }
+                else {
+                    emit(node.expression);
+                    if (node.arguments) {
+                        write("(");
+                        emitCommaList(node.arguments);
+                        write(")");
+                    }
                 }
             }
 

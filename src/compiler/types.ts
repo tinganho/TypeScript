@@ -394,6 +394,11 @@ module ts {
         originalKeywordKind?: SyntaxKind;              // Original syntaxKind which get set so that we can report an error later
     }
 
+    export interface CallTarget {
+        target?: Expression;
+        accessor?: Expression;
+    }
+
     export interface QualifiedName extends Node {
         // Must have same layout as PropertyAccess
         left: EntityName;
