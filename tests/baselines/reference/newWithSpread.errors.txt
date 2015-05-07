@@ -1,0 +1,114 @@
+tests/cases/conformance/expressions/functionCalls/newWithSpread.ts(27,24): error TS2472: Spread operator in 'new' expressions is only available when targeting ECMAScript 5 and higher.
+tests/cases/conformance/expressions/functionCalls/newWithSpread.ts(28,24): error TS2472: Spread operator in 'new' expressions is only available when targeting ECMAScript 5 and higher.
+tests/cases/conformance/expressions/functionCalls/newWithSpread.ts(32,47): error TS2472: Spread operator in 'new' expressions is only available when targeting ECMAScript 5 and higher.
+tests/cases/conformance/expressions/functionCalls/newWithSpread.ts(33,47): error TS2472: Spread operator in 'new' expressions is only available when targeting ECMAScript 5 and higher.
+tests/cases/conformance/expressions/functionCalls/newWithSpread.ts(37,49): error TS2472: Spread operator in 'new' expressions is only available when targeting ECMAScript 5 and higher.
+tests/cases/conformance/expressions/functionCalls/newWithSpread.ts(38,49): error TS2472: Spread operator in 'new' expressions is only available when targeting ECMAScript 5 and higher.
+tests/cases/conformance/expressions/functionCalls/newWithSpread.ts(42,59): error TS2472: Spread operator in 'new' expressions is only available when targeting ECMAScript 5 and higher.
+tests/cases/conformance/expressions/functionCalls/newWithSpread.ts(43,59): error TS2472: Spread operator in 'new' expressions is only available when targeting ECMAScript 5 and higher.
+tests/cases/conformance/expressions/functionCalls/newWithSpread.ts(47,38): error TS2472: Spread operator in 'new' expressions is only available when targeting ECMAScript 5 and higher.
+tests/cases/conformance/expressions/functionCalls/newWithSpread.ts(48,38): error TS2472: Spread operator in 'new' expressions is only available when targeting ECMAScript 5 and higher.
+tests/cases/conformance/expressions/functionCalls/newWithSpread.ts(52,54): error TS2472: Spread operator in 'new' expressions is only available when targeting ECMAScript 5 and higher.
+tests/cases/conformance/expressions/functionCalls/newWithSpread.ts(53,54): error TS2472: Spread operator in 'new' expressions is only available when targeting ECMAScript 5 and higher.
+tests/cases/conformance/expressions/functionCalls/newWithSpread.ts(57,56): error TS2472: Spread operator in 'new' expressions is only available when targeting ECMAScript 5 and higher.
+tests/cases/conformance/expressions/functionCalls/newWithSpread.ts(58,56): error TS2472: Spread operator in 'new' expressions is only available when targeting ECMAScript 5 and higher.
+tests/cases/conformance/expressions/functionCalls/newWithSpread.ts(62,66): error TS2472: Spread operator in 'new' expressions is only available when targeting ECMAScript 5 and higher.
+tests/cases/conformance/expressions/functionCalls/newWithSpread.ts(63,66): error TS2472: Spread operator in 'new' expressions is only available when targeting ECMAScript 5 and higher.
+
+
+==== tests/cases/conformance/expressions/functionCalls/newWithSpread.ts (16 errors) ====
+    
+    function spreadMethod(x: number, y: number, ...z: string[]) {
+    }
+    
+    interface ObjectWithSpreadMethod {
+        spreadMethod: {
+            new (x: number, y: number, ...z: string[]);
+        }
+    }
+    
+    class ClassWithSpreadConstructor {
+        constructor(x: number, y: number, ...z: string[]) {}
+    }
+    
+    interface ObjectWithClassWithSpreadConstructor {
+        class: typeof ClassWithSpreadConstructor;
+    }
+    
+    var spread: string[];
+    var objectWithSpreadMethod: ObjectWithSpreadMethod;
+    var objectWithClassWithSpreadConstructor: ObjectWithClassWithSpreadConstructor;
+    var arrayWithObjectWithSpreadMethod: ObjectWithSpreadMethod[];
+    var arrayWithObjectWithClassWithSpreadConstructor: ObjectWithClassWithSpreadConstructor[];
+    
+    // Basic expression
+    new spreadMethod(1, 2, "string");
+    new spreadMethod(1, 2, ...spread);
+                           ~~~~~~~~~
+!!! error TS2472: Spread operator in 'new' expressions is only available when targeting ECMAScript 5 and higher.
+    new spreadMethod(1, 2, ...spread, "string");
+                           ~~~~~~~~~
+!!! error TS2472: Spread operator in 'new' expressions is only available when targeting ECMAScript 5 and higher.
+    
+    // Property access expression
+    new objectWithSpreadMethod.spreadMethod(1, 2, "string");
+    new objectWithSpreadMethod.spreadMethod(1, 2, ...spread);
+                                                  ~~~~~~~~~
+!!! error TS2472: Spread operator in 'new' expressions is only available when targeting ECMAScript 5 and higher.
+    new objectWithSpreadMethod.spreadMethod(1, 2, ...spread, "string"); 
+                                                  ~~~~~~~~~
+!!! error TS2472: Spread operator in 'new' expressions is only available when targeting ECMAScript 5 and higher.
+    
+    // Parenthesised expression
+    new (objectWithSpreadMethod.spreadMethod)(1, 2, "string");
+    new (objectWithSpreadMethod.spreadMethod)(1, 2, ...spread);
+                                                    ~~~~~~~~~
+!!! error TS2472: Spread operator in 'new' expressions is only available when targeting ECMAScript 5 and higher.
+    new (objectWithSpreadMethod.spreadMethod)(1, 2, ...spread, "string"); 
+                                                    ~~~~~~~~~
+!!! error TS2472: Spread operator in 'new' expressions is only available when targeting ECMAScript 5 and higher.
+    
+    // Element access expression
+    new arrayWithObjectWithSpreadMethod[1].spreadMethod(1, 2, "string");
+    new arrayWithObjectWithSpreadMethod[1].spreadMethod(1, 2, ...spread);
+                                                              ~~~~~~~~~
+!!! error TS2472: Spread operator in 'new' expressions is only available when targeting ECMAScript 5 and higher.
+    new arrayWithObjectWithSpreadMethod[1].spreadMethod(1, 2, ...spread, "string");
+                                                              ~~~~~~~~~
+!!! error TS2472: Spread operator in 'new' expressions is only available when targeting ECMAScript 5 and higher.
+    
+    // Basic expression
+    new ClassWithSpreadConstructor(1, 2, "string");
+    new ClassWithSpreadConstructor(1, 2, ...spread);
+                                         ~~~~~~~~~
+!!! error TS2472: Spread operator in 'new' expressions is only available when targeting ECMAScript 5 and higher.
+    new ClassWithSpreadConstructor(1, 2, ...spread, "string");
+                                         ~~~~~~~~~
+!!! error TS2472: Spread operator in 'new' expressions is only available when targeting ECMAScript 5 and higher.
+    
+    // Property access expression
+    new objectWithClassWithSpreadConstructor.class(1, 2, "string");
+    new objectWithClassWithSpreadConstructor.class(1, 2, ...spread);
+                                                         ~~~~~~~~~
+!!! error TS2472: Spread operator in 'new' expressions is only available when targeting ECMAScript 5 and higher.
+    new objectWithClassWithSpreadConstructor.class(1, 2, ...spread, "string");
+                                                         ~~~~~~~~~
+!!! error TS2472: Spread operator in 'new' expressions is only available when targeting ECMAScript 5 and higher.
+    
+    // Parenthesised expression
+    new (objectWithClassWithSpreadConstructor.class)(1, 2, "string");
+    new (objectWithClassWithSpreadConstructor.class)(1, 2, ...spread);
+                                                           ~~~~~~~~~
+!!! error TS2472: Spread operator in 'new' expressions is only available when targeting ECMAScript 5 and higher.
+    new (objectWithClassWithSpreadConstructor.class)(1, 2, ...spread, "string");
+                                                           ~~~~~~~~~
+!!! error TS2472: Spread operator in 'new' expressions is only available when targeting ECMAScript 5 and higher.
+    
+    // Element access expression
+    new arrayWithObjectWithClassWithSpreadConstructor[1].class(1, 2, "string");
+    new arrayWithObjectWithClassWithSpreadConstructor[1].class(1, 2, ...spread);
+                                                                     ~~~~~~~~~
+!!! error TS2472: Spread operator in 'new' expressions is only available when targeting ECMAScript 5 and higher.
+    new arrayWithObjectWithClassWithSpreadConstructor[1].class(1, 2, ...spread, "string");
+                                                                     ~~~~~~~~~
+!!! error TS2472: Spread operator in 'new' expressions is only available when targeting ECMAScript 5 and higher.

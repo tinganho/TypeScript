@@ -1,0 +1,312 @@
+=== tests/cases/conformance/expressions/functionCalls/newWithSpreadES5.ts ===
+
+function spreadMethod(x: number, y: number, ...z: string[]) {
+>spreadMethod : (x: number, y: number, ...z: string[]) => void
+>x : number
+>y : number
+>z : string[]
+}
+
+interface ObjectWithSpreadMethod {
+>ObjectWithSpreadMethod : ObjectWithSpreadMethod
+
+    spreadMethod: {
+>spreadMethod : new (x: number, y: number, ...z: string[]) => any
+
+        new (x: number, y: number, ...z: string[]);
+>x : number
+>y : number
+>z : string[]
+    }
+}
+
+class ClassWithSpreadConstructor {
+>ClassWithSpreadConstructor : ClassWithSpreadConstructor
+
+    constructor(x: number, y: number, ...z: string[]) {}
+>x : number
+>y : number
+>z : string[]
+}
+
+interface ObjectWithClassWithSpreadConstructor {
+>ObjectWithClassWithSpreadConstructor : ObjectWithClassWithSpreadConstructor
+
+    class: typeof ClassWithSpreadConstructor;
+>class : typeof ClassWithSpreadConstructor
+>ClassWithSpreadConstructor : typeof ClassWithSpreadConstructor
+}
+
+var spread: string[];
+>spread : string[]
+
+var objectWithSpreadMethod: ObjectWithSpreadMethod;
+>objectWithSpreadMethod : ObjectWithSpreadMethod
+>ObjectWithSpreadMethod : ObjectWithSpreadMethod
+
+var objectWithClassWithSpreadConstructor: ObjectWithClassWithSpreadConstructor;
+>objectWithClassWithSpreadConstructor : ObjectWithClassWithSpreadConstructor
+>ObjectWithClassWithSpreadConstructor : ObjectWithClassWithSpreadConstructor
+
+var arrayWithObjectWithSpreadMethod: ObjectWithSpreadMethod[];
+>arrayWithObjectWithSpreadMethod : ObjectWithSpreadMethod[]
+>ObjectWithSpreadMethod : ObjectWithSpreadMethod
+
+var arrayWithObjectWithClassWithSpreadConstructor: ObjectWithClassWithSpreadConstructor[];
+>arrayWithObjectWithClassWithSpreadConstructor : ObjectWithClassWithSpreadConstructor[]
+>ObjectWithClassWithSpreadConstructor : ObjectWithClassWithSpreadConstructor
+
+// Basic expression
+new spreadMethod(1, 2, "string");
+>new spreadMethod(1, 2, "string") : any
+>spreadMethod : (x: number, y: number, ...z: string[]) => void
+>1 : number
+>2 : number
+>"string" : string
+
+new spreadMethod(1, 2, ...spread);
+>new spreadMethod(1, 2, ...spread) : any
+>spreadMethod : (x: number, y: number, ...z: string[]) => void
+>1 : number
+>2 : number
+>...spread : string
+>spread : string[]
+
+new spreadMethod(1, 2, ...spread, "string");
+>new spreadMethod(1, 2, ...spread, "string") : any
+>spreadMethod : (x: number, y: number, ...z: string[]) => void
+>1 : number
+>2 : number
+>...spread : string
+>spread : string[]
+>"string" : string
+
+// Property access expression
+new objectWithSpreadMethod.spreadMethod(1, 2, "string");
+>new objectWithSpreadMethod.spreadMethod(1, 2, "string") : any
+>objectWithSpreadMethod.spreadMethod : new (x: number, y: number, ...z: string[]) => any
+>objectWithSpreadMethod : ObjectWithSpreadMethod
+>spreadMethod : new (x: number, y: number, ...z: string[]) => any
+>1 : number
+>2 : number
+>"string" : string
+
+new objectWithSpreadMethod.spreadMethod(1, 2, ...spread);
+>new objectWithSpreadMethod.spreadMethod(1, 2, ...spread) : any
+>objectWithSpreadMethod.spreadMethod : new (x: number, y: number, ...z: string[]) => any
+>objectWithSpreadMethod : ObjectWithSpreadMethod
+>spreadMethod : new (x: number, y: number, ...z: string[]) => any
+>1 : number
+>2 : number
+>...spread : string
+>spread : string[]
+
+new objectWithSpreadMethod.spreadMethod(1, 2, ...spread, "string"); 
+>new objectWithSpreadMethod.spreadMethod(1, 2, ...spread, "string") : any
+>objectWithSpreadMethod.spreadMethod : new (x: number, y: number, ...z: string[]) => any
+>objectWithSpreadMethod : ObjectWithSpreadMethod
+>spreadMethod : new (x: number, y: number, ...z: string[]) => any
+>1 : number
+>2 : number
+>...spread : string
+>spread : string[]
+>"string" : string
+
+// Parenthesised expression
+new (objectWithSpreadMethod.spreadMethod)(1, 2, "string");
+>new (objectWithSpreadMethod.spreadMethod)(1, 2, "string") : any
+>(objectWithSpreadMethod.spreadMethod) : new (x: number, y: number, ...z: string[]) => any
+>objectWithSpreadMethod.spreadMethod : new (x: number, y: number, ...z: string[]) => any
+>objectWithSpreadMethod : ObjectWithSpreadMethod
+>spreadMethod : new (x: number, y: number, ...z: string[]) => any
+>1 : number
+>2 : number
+>"string" : string
+
+new (objectWithSpreadMethod.spreadMethod)(1, 2, ...spread);
+>new (objectWithSpreadMethod.spreadMethod)(1, 2, ...spread) : any
+>(objectWithSpreadMethod.spreadMethod) : new (x: number, y: number, ...z: string[]) => any
+>objectWithSpreadMethod.spreadMethod : new (x: number, y: number, ...z: string[]) => any
+>objectWithSpreadMethod : ObjectWithSpreadMethod
+>spreadMethod : new (x: number, y: number, ...z: string[]) => any
+>1 : number
+>2 : number
+>...spread : string
+>spread : string[]
+
+new (objectWithSpreadMethod.spreadMethod)(1, 2, ...spread, "string"); 
+>new (objectWithSpreadMethod.spreadMethod)(1, 2, ...spread, "string") : any
+>(objectWithSpreadMethod.spreadMethod) : new (x: number, y: number, ...z: string[]) => any
+>objectWithSpreadMethod.spreadMethod : new (x: number, y: number, ...z: string[]) => any
+>objectWithSpreadMethod : ObjectWithSpreadMethod
+>spreadMethod : new (x: number, y: number, ...z: string[]) => any
+>1 : number
+>2 : number
+>...spread : string
+>spread : string[]
+>"string" : string
+
+// Element access expression
+new arrayWithObjectWithSpreadMethod[1].spreadMethod(1, 2, "string");
+>new arrayWithObjectWithSpreadMethod[1].spreadMethod(1, 2, "string") : any
+>arrayWithObjectWithSpreadMethod[1].spreadMethod : new (x: number, y: number, ...z: string[]) => any
+>arrayWithObjectWithSpreadMethod[1] : ObjectWithSpreadMethod
+>arrayWithObjectWithSpreadMethod : ObjectWithSpreadMethod[]
+>1 : number
+>spreadMethod : new (x: number, y: number, ...z: string[]) => any
+>1 : number
+>2 : number
+>"string" : string
+
+new arrayWithObjectWithSpreadMethod[1].spreadMethod(1, 2, ...spread);
+>new arrayWithObjectWithSpreadMethod[1].spreadMethod(1, 2, ...spread) : any
+>arrayWithObjectWithSpreadMethod[1].spreadMethod : new (x: number, y: number, ...z: string[]) => any
+>arrayWithObjectWithSpreadMethod[1] : ObjectWithSpreadMethod
+>arrayWithObjectWithSpreadMethod : ObjectWithSpreadMethod[]
+>1 : number
+>spreadMethod : new (x: number, y: number, ...z: string[]) => any
+>1 : number
+>2 : number
+>...spread : string
+>spread : string[]
+
+new arrayWithObjectWithSpreadMethod[1].spreadMethod(1, 2, ...spread, "string");
+>new arrayWithObjectWithSpreadMethod[1].spreadMethod(1, 2, ...spread, "string") : any
+>arrayWithObjectWithSpreadMethod[1].spreadMethod : new (x: number, y: number, ...z: string[]) => any
+>arrayWithObjectWithSpreadMethod[1] : ObjectWithSpreadMethod
+>arrayWithObjectWithSpreadMethod : ObjectWithSpreadMethod[]
+>1 : number
+>spreadMethod : new (x: number, y: number, ...z: string[]) => any
+>1 : number
+>2 : number
+>...spread : string
+>spread : string[]
+>"string" : string
+
+// Basic expression
+new ClassWithSpreadConstructor(1, 2, "string");
+>new ClassWithSpreadConstructor(1, 2, "string") : ClassWithSpreadConstructor
+>ClassWithSpreadConstructor : typeof ClassWithSpreadConstructor
+>1 : number
+>2 : number
+>"string" : string
+
+new ClassWithSpreadConstructor(1, 2, ...spread);
+>new ClassWithSpreadConstructor(1, 2, ...spread) : ClassWithSpreadConstructor
+>ClassWithSpreadConstructor : typeof ClassWithSpreadConstructor
+>1 : number
+>2 : number
+>...spread : string
+>spread : string[]
+
+new ClassWithSpreadConstructor(1, 2, ...spread, "string");
+>new ClassWithSpreadConstructor(1, 2, ...spread, "string") : ClassWithSpreadConstructor
+>ClassWithSpreadConstructor : typeof ClassWithSpreadConstructor
+>1 : number
+>2 : number
+>...spread : string
+>spread : string[]
+>"string" : string
+
+// Property access expression
+new objectWithClassWithSpreadConstructor.class(1, 2, "string");
+>new objectWithClassWithSpreadConstructor.class(1, 2, "string") : ClassWithSpreadConstructor
+>objectWithClassWithSpreadConstructor.class : typeof ClassWithSpreadConstructor
+>objectWithClassWithSpreadConstructor : ObjectWithClassWithSpreadConstructor
+>class : typeof ClassWithSpreadConstructor
+>1 : number
+>2 : number
+>"string" : string
+
+new objectWithClassWithSpreadConstructor.class(1, 2, ...spread);
+>new objectWithClassWithSpreadConstructor.class(1, 2, ...spread) : ClassWithSpreadConstructor
+>objectWithClassWithSpreadConstructor.class : typeof ClassWithSpreadConstructor
+>objectWithClassWithSpreadConstructor : ObjectWithClassWithSpreadConstructor
+>class : typeof ClassWithSpreadConstructor
+>1 : number
+>2 : number
+>...spread : string
+>spread : string[]
+
+new objectWithClassWithSpreadConstructor.class(1, 2, ...spread, "string");
+>new objectWithClassWithSpreadConstructor.class(1, 2, ...spread, "string") : ClassWithSpreadConstructor
+>objectWithClassWithSpreadConstructor.class : typeof ClassWithSpreadConstructor
+>objectWithClassWithSpreadConstructor : ObjectWithClassWithSpreadConstructor
+>class : typeof ClassWithSpreadConstructor
+>1 : number
+>2 : number
+>...spread : string
+>spread : string[]
+>"string" : string
+
+// Parenthesised expression
+new (objectWithClassWithSpreadConstructor.class)(1, 2, "string");
+>new (objectWithClassWithSpreadConstructor.class)(1, 2, "string") : ClassWithSpreadConstructor
+>(objectWithClassWithSpreadConstructor.class) : typeof ClassWithSpreadConstructor
+>objectWithClassWithSpreadConstructor.class : typeof ClassWithSpreadConstructor
+>objectWithClassWithSpreadConstructor : ObjectWithClassWithSpreadConstructor
+>class : typeof ClassWithSpreadConstructor
+>1 : number
+>2 : number
+>"string" : string
+
+new (objectWithClassWithSpreadConstructor.class)(1, 2, ...spread);
+>new (objectWithClassWithSpreadConstructor.class)(1, 2, ...spread) : ClassWithSpreadConstructor
+>(objectWithClassWithSpreadConstructor.class) : typeof ClassWithSpreadConstructor
+>objectWithClassWithSpreadConstructor.class : typeof ClassWithSpreadConstructor
+>objectWithClassWithSpreadConstructor : ObjectWithClassWithSpreadConstructor
+>class : typeof ClassWithSpreadConstructor
+>1 : number
+>2 : number
+>...spread : string
+>spread : string[]
+
+new (objectWithClassWithSpreadConstructor.class)(1, 2, ...spread, "string");
+>new (objectWithClassWithSpreadConstructor.class)(1, 2, ...spread, "string") : ClassWithSpreadConstructor
+>(objectWithClassWithSpreadConstructor.class) : typeof ClassWithSpreadConstructor
+>objectWithClassWithSpreadConstructor.class : typeof ClassWithSpreadConstructor
+>objectWithClassWithSpreadConstructor : ObjectWithClassWithSpreadConstructor
+>class : typeof ClassWithSpreadConstructor
+>1 : number
+>2 : number
+>...spread : string
+>spread : string[]
+>"string" : string
+
+// Element access expression
+new arrayWithObjectWithClassWithSpreadConstructor[1].class(1, 2, "string");
+>new arrayWithObjectWithClassWithSpreadConstructor[1].class(1, 2, "string") : ClassWithSpreadConstructor
+>arrayWithObjectWithClassWithSpreadConstructor[1].class : typeof ClassWithSpreadConstructor
+>arrayWithObjectWithClassWithSpreadConstructor[1] : ObjectWithClassWithSpreadConstructor
+>arrayWithObjectWithClassWithSpreadConstructor : ObjectWithClassWithSpreadConstructor[]
+>1 : number
+>class : typeof ClassWithSpreadConstructor
+>1 : number
+>2 : number
+>"string" : string
+
+new arrayWithObjectWithClassWithSpreadConstructor[1].class(1, 2, ...spread);
+>new arrayWithObjectWithClassWithSpreadConstructor[1].class(1, 2, ...spread) : ClassWithSpreadConstructor
+>arrayWithObjectWithClassWithSpreadConstructor[1].class : typeof ClassWithSpreadConstructor
+>arrayWithObjectWithClassWithSpreadConstructor[1] : ObjectWithClassWithSpreadConstructor
+>arrayWithObjectWithClassWithSpreadConstructor : ObjectWithClassWithSpreadConstructor[]
+>1 : number
+>class : typeof ClassWithSpreadConstructor
+>1 : number
+>2 : number
+>...spread : string
+>spread : string[]
+
+new arrayWithObjectWithClassWithSpreadConstructor[1].class(1, 2, ...spread, "string");
+>new arrayWithObjectWithClassWithSpreadConstructor[1].class(1, 2, ...spread, "string") : ClassWithSpreadConstructor
+>arrayWithObjectWithClassWithSpreadConstructor[1].class : typeof ClassWithSpreadConstructor
+>arrayWithObjectWithClassWithSpreadConstructor[1] : ObjectWithClassWithSpreadConstructor
+>arrayWithObjectWithClassWithSpreadConstructor : ObjectWithClassWithSpreadConstructor[]
+>1 : number
+>class : typeof ClassWithSpreadConstructor
+>1 : number
+>2 : number
+>...spread : string
+>spread : string[]
+>"string" : string
+

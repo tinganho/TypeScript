@@ -1,0 +1,190 @@
+=== tests/cases/conformance/expressions/functionCalls/newWithSpreadES5.ts ===
+
+function spreadMethod(x: number, y: number, ...z: string[]) {
+>spreadMethod : Symbol(spreadMethod, Decl(newWithSpreadES5.ts, 0, 0))
+>x : Symbol(x, Decl(newWithSpreadES5.ts, 1, 22))
+>y : Symbol(y, Decl(newWithSpreadES5.ts, 1, 32))
+>z : Symbol(z, Decl(newWithSpreadES5.ts, 1, 43))
+}
+
+interface ObjectWithSpreadMethod {
+>ObjectWithSpreadMethod : Symbol(ObjectWithSpreadMethod, Decl(newWithSpreadES5.ts, 2, 1))
+
+    spreadMethod: {
+>spreadMethod : Symbol(spreadMethod, Decl(newWithSpreadES5.ts, 4, 34))
+
+        new (x: number, y: number, ...z: string[]);
+>x : Symbol(x, Decl(newWithSpreadES5.ts, 6, 13))
+>y : Symbol(y, Decl(newWithSpreadES5.ts, 6, 23))
+>z : Symbol(z, Decl(newWithSpreadES5.ts, 6, 34))
+    }
+}
+
+class ClassWithSpreadConstructor {
+>ClassWithSpreadConstructor : Symbol(ClassWithSpreadConstructor, Decl(newWithSpreadES5.ts, 8, 1))
+
+    constructor(x: number, y: number, ...z: string[]) {}
+>x : Symbol(x, Decl(newWithSpreadES5.ts, 11, 16))
+>y : Symbol(y, Decl(newWithSpreadES5.ts, 11, 26))
+>z : Symbol(z, Decl(newWithSpreadES5.ts, 11, 37))
+}
+
+interface ObjectWithClassWithSpreadConstructor {
+>ObjectWithClassWithSpreadConstructor : Symbol(ObjectWithClassWithSpreadConstructor, Decl(newWithSpreadES5.ts, 12, 1))
+
+    class: typeof ClassWithSpreadConstructor;
+>class : Symbol(class, Decl(newWithSpreadES5.ts, 14, 48))
+>ClassWithSpreadConstructor : Symbol(ClassWithSpreadConstructor, Decl(newWithSpreadES5.ts, 8, 1))
+}
+
+var spread: string[];
+>spread : Symbol(spread, Decl(newWithSpreadES5.ts, 18, 3))
+
+var objectWithSpreadMethod: ObjectWithSpreadMethod;
+>objectWithSpreadMethod : Symbol(objectWithSpreadMethod, Decl(newWithSpreadES5.ts, 19, 3))
+>ObjectWithSpreadMethod : Symbol(ObjectWithSpreadMethod, Decl(newWithSpreadES5.ts, 2, 1))
+
+var objectWithClassWithSpreadConstructor: ObjectWithClassWithSpreadConstructor;
+>objectWithClassWithSpreadConstructor : Symbol(objectWithClassWithSpreadConstructor, Decl(newWithSpreadES5.ts, 20, 3))
+>ObjectWithClassWithSpreadConstructor : Symbol(ObjectWithClassWithSpreadConstructor, Decl(newWithSpreadES5.ts, 12, 1))
+
+var arrayWithObjectWithSpreadMethod: ObjectWithSpreadMethod[];
+>arrayWithObjectWithSpreadMethod : Symbol(arrayWithObjectWithSpreadMethod, Decl(newWithSpreadES5.ts, 21, 3))
+>ObjectWithSpreadMethod : Symbol(ObjectWithSpreadMethod, Decl(newWithSpreadES5.ts, 2, 1))
+
+var arrayWithObjectWithClassWithSpreadConstructor: ObjectWithClassWithSpreadConstructor[];
+>arrayWithObjectWithClassWithSpreadConstructor : Symbol(arrayWithObjectWithClassWithSpreadConstructor, Decl(newWithSpreadES5.ts, 22, 3))
+>ObjectWithClassWithSpreadConstructor : Symbol(ObjectWithClassWithSpreadConstructor, Decl(newWithSpreadES5.ts, 12, 1))
+
+// Basic expression
+new spreadMethod(1, 2, "string");
+>spreadMethod : Symbol(spreadMethod, Decl(newWithSpreadES5.ts, 0, 0))
+
+new spreadMethod(1, 2, ...spread);
+>spreadMethod : Symbol(spreadMethod, Decl(newWithSpreadES5.ts, 0, 0))
+>spread : Symbol(spread, Decl(newWithSpreadES5.ts, 18, 3))
+
+new spreadMethod(1, 2, ...spread, "string");
+>spreadMethod : Symbol(spreadMethod, Decl(newWithSpreadES5.ts, 0, 0))
+>spread : Symbol(spread, Decl(newWithSpreadES5.ts, 18, 3))
+
+// Property access expression
+new objectWithSpreadMethod.spreadMethod(1, 2, "string");
+>objectWithSpreadMethod.spreadMethod : Symbol(ObjectWithSpreadMethod.spreadMethod, Decl(newWithSpreadES5.ts, 4, 34))
+>objectWithSpreadMethod : Symbol(objectWithSpreadMethod, Decl(newWithSpreadES5.ts, 19, 3))
+>spreadMethod : Symbol(ObjectWithSpreadMethod.spreadMethod, Decl(newWithSpreadES5.ts, 4, 34))
+
+new objectWithSpreadMethod.spreadMethod(1, 2, ...spread);
+>objectWithSpreadMethod.spreadMethod : Symbol(ObjectWithSpreadMethod.spreadMethod, Decl(newWithSpreadES5.ts, 4, 34))
+>objectWithSpreadMethod : Symbol(objectWithSpreadMethod, Decl(newWithSpreadES5.ts, 19, 3))
+>spreadMethod : Symbol(ObjectWithSpreadMethod.spreadMethod, Decl(newWithSpreadES5.ts, 4, 34))
+>spread : Symbol(spread, Decl(newWithSpreadES5.ts, 18, 3))
+
+new objectWithSpreadMethod.spreadMethod(1, 2, ...spread, "string"); 
+>objectWithSpreadMethod.spreadMethod : Symbol(ObjectWithSpreadMethod.spreadMethod, Decl(newWithSpreadES5.ts, 4, 34))
+>objectWithSpreadMethod : Symbol(objectWithSpreadMethod, Decl(newWithSpreadES5.ts, 19, 3))
+>spreadMethod : Symbol(ObjectWithSpreadMethod.spreadMethod, Decl(newWithSpreadES5.ts, 4, 34))
+>spread : Symbol(spread, Decl(newWithSpreadES5.ts, 18, 3))
+
+// Parenthesised expression
+new (objectWithSpreadMethod.spreadMethod)(1, 2, "string");
+>objectWithSpreadMethod.spreadMethod : Symbol(ObjectWithSpreadMethod.spreadMethod, Decl(newWithSpreadES5.ts, 4, 34))
+>objectWithSpreadMethod : Symbol(objectWithSpreadMethod, Decl(newWithSpreadES5.ts, 19, 3))
+>spreadMethod : Symbol(ObjectWithSpreadMethod.spreadMethod, Decl(newWithSpreadES5.ts, 4, 34))
+
+new (objectWithSpreadMethod.spreadMethod)(1, 2, ...spread);
+>objectWithSpreadMethod.spreadMethod : Symbol(ObjectWithSpreadMethod.spreadMethod, Decl(newWithSpreadES5.ts, 4, 34))
+>objectWithSpreadMethod : Symbol(objectWithSpreadMethod, Decl(newWithSpreadES5.ts, 19, 3))
+>spreadMethod : Symbol(ObjectWithSpreadMethod.spreadMethod, Decl(newWithSpreadES5.ts, 4, 34))
+>spread : Symbol(spread, Decl(newWithSpreadES5.ts, 18, 3))
+
+new (objectWithSpreadMethod.spreadMethod)(1, 2, ...spread, "string"); 
+>objectWithSpreadMethod.spreadMethod : Symbol(ObjectWithSpreadMethod.spreadMethod, Decl(newWithSpreadES5.ts, 4, 34))
+>objectWithSpreadMethod : Symbol(objectWithSpreadMethod, Decl(newWithSpreadES5.ts, 19, 3))
+>spreadMethod : Symbol(ObjectWithSpreadMethod.spreadMethod, Decl(newWithSpreadES5.ts, 4, 34))
+>spread : Symbol(spread, Decl(newWithSpreadES5.ts, 18, 3))
+
+// Element access expression
+new arrayWithObjectWithSpreadMethod[1].spreadMethod(1, 2, "string");
+>arrayWithObjectWithSpreadMethod[1].spreadMethod : Symbol(ObjectWithSpreadMethod.spreadMethod, Decl(newWithSpreadES5.ts, 4, 34))
+>arrayWithObjectWithSpreadMethod : Symbol(arrayWithObjectWithSpreadMethod, Decl(newWithSpreadES5.ts, 21, 3))
+>spreadMethod : Symbol(ObjectWithSpreadMethod.spreadMethod, Decl(newWithSpreadES5.ts, 4, 34))
+
+new arrayWithObjectWithSpreadMethod[1].spreadMethod(1, 2, ...spread);
+>arrayWithObjectWithSpreadMethod[1].spreadMethod : Symbol(ObjectWithSpreadMethod.spreadMethod, Decl(newWithSpreadES5.ts, 4, 34))
+>arrayWithObjectWithSpreadMethod : Symbol(arrayWithObjectWithSpreadMethod, Decl(newWithSpreadES5.ts, 21, 3))
+>spreadMethod : Symbol(ObjectWithSpreadMethod.spreadMethod, Decl(newWithSpreadES5.ts, 4, 34))
+>spread : Symbol(spread, Decl(newWithSpreadES5.ts, 18, 3))
+
+new arrayWithObjectWithSpreadMethod[1].spreadMethod(1, 2, ...spread, "string");
+>arrayWithObjectWithSpreadMethod[1].spreadMethod : Symbol(ObjectWithSpreadMethod.spreadMethod, Decl(newWithSpreadES5.ts, 4, 34))
+>arrayWithObjectWithSpreadMethod : Symbol(arrayWithObjectWithSpreadMethod, Decl(newWithSpreadES5.ts, 21, 3))
+>spreadMethod : Symbol(ObjectWithSpreadMethod.spreadMethod, Decl(newWithSpreadES5.ts, 4, 34))
+>spread : Symbol(spread, Decl(newWithSpreadES5.ts, 18, 3))
+
+// Basic expression
+new ClassWithSpreadConstructor(1, 2, "string");
+>ClassWithSpreadConstructor : Symbol(ClassWithSpreadConstructor, Decl(newWithSpreadES5.ts, 8, 1))
+
+new ClassWithSpreadConstructor(1, 2, ...spread);
+>ClassWithSpreadConstructor : Symbol(ClassWithSpreadConstructor, Decl(newWithSpreadES5.ts, 8, 1))
+>spread : Symbol(spread, Decl(newWithSpreadES5.ts, 18, 3))
+
+new ClassWithSpreadConstructor(1, 2, ...spread, "string");
+>ClassWithSpreadConstructor : Symbol(ClassWithSpreadConstructor, Decl(newWithSpreadES5.ts, 8, 1))
+>spread : Symbol(spread, Decl(newWithSpreadES5.ts, 18, 3))
+
+// Property access expression
+new objectWithClassWithSpreadConstructor.class(1, 2, "string");
+>objectWithClassWithSpreadConstructor.class : Symbol(ObjectWithClassWithSpreadConstructor.class, Decl(newWithSpreadES5.ts, 14, 48))
+>objectWithClassWithSpreadConstructor : Symbol(objectWithClassWithSpreadConstructor, Decl(newWithSpreadES5.ts, 20, 3))
+>class : Symbol(ObjectWithClassWithSpreadConstructor.class, Decl(newWithSpreadES5.ts, 14, 48))
+
+new objectWithClassWithSpreadConstructor.class(1, 2, ...spread);
+>objectWithClassWithSpreadConstructor.class : Symbol(ObjectWithClassWithSpreadConstructor.class, Decl(newWithSpreadES5.ts, 14, 48))
+>objectWithClassWithSpreadConstructor : Symbol(objectWithClassWithSpreadConstructor, Decl(newWithSpreadES5.ts, 20, 3))
+>class : Symbol(ObjectWithClassWithSpreadConstructor.class, Decl(newWithSpreadES5.ts, 14, 48))
+>spread : Symbol(spread, Decl(newWithSpreadES5.ts, 18, 3))
+
+new objectWithClassWithSpreadConstructor.class(1, 2, ...spread, "string");
+>objectWithClassWithSpreadConstructor.class : Symbol(ObjectWithClassWithSpreadConstructor.class, Decl(newWithSpreadES5.ts, 14, 48))
+>objectWithClassWithSpreadConstructor : Symbol(objectWithClassWithSpreadConstructor, Decl(newWithSpreadES5.ts, 20, 3))
+>class : Symbol(ObjectWithClassWithSpreadConstructor.class, Decl(newWithSpreadES5.ts, 14, 48))
+>spread : Symbol(spread, Decl(newWithSpreadES5.ts, 18, 3))
+
+// Parenthesised expression
+new (objectWithClassWithSpreadConstructor.class)(1, 2, "string");
+>objectWithClassWithSpreadConstructor.class : Symbol(ObjectWithClassWithSpreadConstructor.class, Decl(newWithSpreadES5.ts, 14, 48))
+>objectWithClassWithSpreadConstructor : Symbol(objectWithClassWithSpreadConstructor, Decl(newWithSpreadES5.ts, 20, 3))
+>class : Symbol(ObjectWithClassWithSpreadConstructor.class, Decl(newWithSpreadES5.ts, 14, 48))
+
+new (objectWithClassWithSpreadConstructor.class)(1, 2, ...spread);
+>objectWithClassWithSpreadConstructor.class : Symbol(ObjectWithClassWithSpreadConstructor.class, Decl(newWithSpreadES5.ts, 14, 48))
+>objectWithClassWithSpreadConstructor : Symbol(objectWithClassWithSpreadConstructor, Decl(newWithSpreadES5.ts, 20, 3))
+>class : Symbol(ObjectWithClassWithSpreadConstructor.class, Decl(newWithSpreadES5.ts, 14, 48))
+>spread : Symbol(spread, Decl(newWithSpreadES5.ts, 18, 3))
+
+new (objectWithClassWithSpreadConstructor.class)(1, 2, ...spread, "string");
+>objectWithClassWithSpreadConstructor.class : Symbol(ObjectWithClassWithSpreadConstructor.class, Decl(newWithSpreadES5.ts, 14, 48))
+>objectWithClassWithSpreadConstructor : Symbol(objectWithClassWithSpreadConstructor, Decl(newWithSpreadES5.ts, 20, 3))
+>class : Symbol(ObjectWithClassWithSpreadConstructor.class, Decl(newWithSpreadES5.ts, 14, 48))
+>spread : Symbol(spread, Decl(newWithSpreadES5.ts, 18, 3))
+
+// Element access expression
+new arrayWithObjectWithClassWithSpreadConstructor[1].class(1, 2, "string");
+>arrayWithObjectWithClassWithSpreadConstructor[1].class : Symbol(ObjectWithClassWithSpreadConstructor.class, Decl(newWithSpreadES5.ts, 14, 48))
+>arrayWithObjectWithClassWithSpreadConstructor : Symbol(arrayWithObjectWithClassWithSpreadConstructor, Decl(newWithSpreadES5.ts, 22, 3))
+>class : Symbol(ObjectWithClassWithSpreadConstructor.class, Decl(newWithSpreadES5.ts, 14, 48))
+
+new arrayWithObjectWithClassWithSpreadConstructor[1].class(1, 2, ...spread);
+>arrayWithObjectWithClassWithSpreadConstructor[1].class : Symbol(ObjectWithClassWithSpreadConstructor.class, Decl(newWithSpreadES5.ts, 14, 48))
+>arrayWithObjectWithClassWithSpreadConstructor : Symbol(arrayWithObjectWithClassWithSpreadConstructor, Decl(newWithSpreadES5.ts, 22, 3))
+>class : Symbol(ObjectWithClassWithSpreadConstructor.class, Decl(newWithSpreadES5.ts, 14, 48))
+>spread : Symbol(spread, Decl(newWithSpreadES5.ts, 18, 3))
+
+new arrayWithObjectWithClassWithSpreadConstructor[1].class(1, 2, ...spread, "string");
+>arrayWithObjectWithClassWithSpreadConstructor[1].class : Symbol(ObjectWithClassWithSpreadConstructor.class, Decl(newWithSpreadES5.ts, 14, 48))
+>arrayWithObjectWithClassWithSpreadConstructor : Symbol(arrayWithObjectWithClassWithSpreadConstructor, Decl(newWithSpreadES5.ts, 22, 3))
+>class : Symbol(ObjectWithClassWithSpreadConstructor.class, Decl(newWithSpreadES5.ts, 14, 48))
+>spread : Symbol(spread, Decl(newWithSpreadES5.ts, 18, 3))
+
