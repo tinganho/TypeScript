@@ -1,1 +1,3 @@
 *.js linguist-language=TypeScript
+
+{src,scripts}/**.{ts,json,js} eol=clrf
