@@ -1,0 +1,25 @@
+=== tests/cases/conformance/externalModules/exportNonInitializedVariablesUMD.ts ===
+
+export var a;
+>a : Symbol(a, Decl(exportNonInitializedVariablesUMD.ts, 1, 10))
+
+export let b;
+>b : Symbol(b, Decl(exportNonInitializedVariablesUMD.ts, 2, 10))
+
+export var c: string;
+>c : Symbol(c, Decl(exportNonInitializedVariablesUMD.ts, 3, 10))
+
+export let d: number;
+>d : Symbol(d, Decl(exportNonInitializedVariablesUMD.ts, 4, 10))
+
+class A {}
+>A : Symbol(A, Decl(exportNonInitializedVariablesUMD.ts, 4, 21))
+
+export var e: A;
+>e : Symbol(e, Decl(exportNonInitializedVariablesUMD.ts, 6, 10))
+>A : Symbol(A, Decl(exportNonInitializedVariablesUMD.ts, 4, 21))
+
+export let f: A;
+>f : Symbol(f, Decl(exportNonInitializedVariablesUMD.ts, 7, 10))
+>A : Symbol(A, Decl(exportNonInitializedVariablesUMD.ts, 4, 21))
+

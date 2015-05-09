@@ -1,0 +1,25 @@
+=== tests/cases/conformance/externalModules/exportNonInitializedVariablesAMD.ts ===
+
+export var a;
+>a : Symbol(a, Decl(exportNonInitializedVariablesAMD.ts, 1, 10))
+
+export let b;
+>b : Symbol(b, Decl(exportNonInitializedVariablesAMD.ts, 2, 10))
+
+export var c: string;
+>c : Symbol(c, Decl(exportNonInitializedVariablesAMD.ts, 3, 10))
+
+export let d: number;
+>d : Symbol(d, Decl(exportNonInitializedVariablesAMD.ts, 4, 10))
+
+class A {}
+>A : Symbol(A, Decl(exportNonInitializedVariablesAMD.ts, 4, 21))
+
+export var e: A;
+>e : Symbol(e, Decl(exportNonInitializedVariablesAMD.ts, 6, 10))
+>A : Symbol(A, Decl(exportNonInitializedVariablesAMD.ts, 4, 21))
+
+export let f: A;
+>f : Symbol(f, Decl(exportNonInitializedVariablesAMD.ts, 7, 10))
+>A : Symbol(A, Decl(exportNonInitializedVariablesAMD.ts, 4, 21))
+

@@ -1,0 +1,28 @@
+=== tests/cases/conformance/internalModules/exportDeclarations/NonInitializedExportInInternalModule.ts ===
+
+module A {
+>A : Symbol(A, Decl(NonInitializedExportInInternalModule.ts, 0, 0))
+
+    export var a;
+>a : Symbol(a, Decl(NonInitializedExportInInternalModule.ts, 2, 14))
+
+    export let b;
+>b : Symbol(b, Decl(NonInitializedExportInInternalModule.ts, 3, 14))
+
+    export var c: string;
+>c : Symbol(c, Decl(NonInitializedExportInInternalModule.ts, 4, 14))
+
+    export let d: number;
+>d : Symbol(d, Decl(NonInitializedExportInInternalModule.ts, 5, 14))
+
+    class A {}
+>A : Symbol(A, Decl(NonInitializedExportInInternalModule.ts, 5, 25))
+
+    export var e: A;
+>e : Symbol(e, Decl(NonInitializedExportInInternalModule.ts, 7, 14))
+>A : Symbol(A, Decl(NonInitializedExportInInternalModule.ts, 5, 25))
+
+    export let f: A;
+>f : Symbol(f, Decl(NonInitializedExportInInternalModule.ts, 8, 14))
+>A : Symbol(A, Decl(NonInitializedExportInInternalModule.ts, 5, 25))
+}

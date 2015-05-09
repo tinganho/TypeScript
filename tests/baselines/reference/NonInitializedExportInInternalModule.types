@@ -1,0 +1,28 @@
+=== tests/cases/conformance/internalModules/exportDeclarations/NonInitializedExportInInternalModule.ts ===
+
+module A {
+>A : typeof A
+
+    export var a;
+>a : any
+
+    export let b;
+>b : any
+
+    export var c: string;
+>c : string
+
+    export let d: number;
+>d : number
+
+    class A {}
+>A : A
+
+    export var e: A;
+>e : A
+>A : A
+
+    export let f: A;
+>f : A
+>A : A
+}
