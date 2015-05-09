@@ -7,6 +7,5 @@ export var x;
 var y;
 
 //// [file1.js]
-export var x;
 //// [all.js]
 var y;

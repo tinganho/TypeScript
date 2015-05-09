@@ -11,4 +11,3 @@ var E;
 })(E || (E = {}));
 ;
 var e = E.X;
-export var x;

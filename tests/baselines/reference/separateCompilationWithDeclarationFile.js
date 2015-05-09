@@ -8,4 +8,3 @@ declare function foo(): void;
 export var x;
 
 //// [file1.js]
-export var x;
