@@ -139,7 +139,7 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
             let exportEquals: ExportAssignment;
             let hasExportStars: boolean;
 
-            /** write emitted output to disk*/
+            /** Write emitted output to disk */
             let writeEmittedFiles = writeJavaScriptFile;
 
             let detachedCommentsInfo: { nodePos: number; detachedCommentEndPos: number }[];
@@ -3055,17 +3055,34 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
             }
 
             function emitVariableStatement(node: VariableStatement) {
+                let variableDeclarations = <VariableDeclaration[]>node.declarationList.declarations;
                 let startIsEmitted = true;
-                if (!(node.flags & NodeFlags.Export)) {
-                    startIsEmitted = tryEmitStartOfVariableDeclarationList(node.declarationList);
+                if (node.flags & NodeFlags.Export) {
+                    if (!isES6ExportedDeclaration(node)) {
+                        variableDeclarations = filter(variableDeclarations, node => !!node.initializer);
+                        // Filter filtered-empty declarations. We still want to emit orginal empty declarations to yield runtime errors.
+                        // If we filter original empty variable statements — we will compile invalid TS code to valid JS code.
+                        //
+                        //   Example:
+                        //
+                        //     var; => var; // original empty declarations
+                        //     export var a; => [empty] // filtered-empty declaration of the filter above.
+                        //
+                        if (node.declarationList.declarations.length !== 0 && variableDeclarations.length === 0) {
+                            return;
+                        }
+                    }
+                    else {
+                        // Exported ES6 module member
+                        write("export ");
+                        startIsEmitted = tryEmitStartOfVariableDeclarationList(node.declarationList);
+                    }
                 }
-                else if (isES6ExportedDeclaration(node)) {
-                    // Exported ES6 module member
-                    write("export ");
+                else {
                     startIsEmitted = tryEmitStartOfVariableDeclarationList(node.declarationList);
                 }
                 if (startIsEmitted) {
-                    emitCommaList(node.declarationList.declarations);
+                    emitCommaList(variableDeclarations);
                     write(";");
                 }
                 else {
@@ -3075,7 +3092,7 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
                     }
                 }
                 if (languageVersion < ScriptTarget.ES6 && node.parent === currentSourceFile) {
-                    forEach(node.declarationList.declarations, emitExportVariableAssignments);
+                    forEach(variableDeclarations, emitExportVariableAssignments);
                 }
             }
 
