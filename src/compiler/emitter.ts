@@ -139,7 +139,7 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
             let exportEquals: ExportAssignment;
             let hasExportStars: boolean;
 
-            /** write emitted output to disk*/
+            /** Write emitted output to disk */
             let writeEmittedFiles = writeJavaScriptFile;
 
             let detachedCommentsInfo: { nodePos: number; detachedCommentEndPos: number }[];
@@ -3054,7 +3054,31 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
                     node.parent.kind === SyntaxKind.SourceFile;
             }
 
+            function filterNonInitializedExportedVariableDeclarations(nodes: NodeArray<VariableDeclaration>, flag: NodeFlags): NodeArray<VariableDeclaration> {
+                let result = <NodeArray<VariableDeclaration>>Object.create(nodes);
+                result.splice(0);
+                for (let i = 0; i<nodes.length; i++) {
+                    if (!(nodes[i].parent.parent.flags & NodeFlags.Export && !nodes[i].initializer)) {
+                        result.push(nodes[i]);
+                    }
+                }
+                return result;
+            }
+
             function emitVariableStatement(node: VariableStatement) {
+                let variableDeclarations: NodeArray<VariableDeclaration>;
+                if (isES6ExportedDeclaration(node)) {
+                    variableDeclarations = node.declarationList.declarations;
+                }
+                else {
+                    // Filter non-initialized exported variable declarations because they are equal to non-declared ones.
+                    variableDeclarations = filterNonInitializedExportedVariableDeclarations(node.declarationList.declarations, node.flags);
+                    // Filter filtered empty declarations. We still want to emit orginal empty declarations to yield runtime errors.
+                    // If we filter original empty variable statements — we will compile invalid TS code to valid JS code.
+                    if (node.declarationList.declarations.length !== 0 && variableDeclarations.length === 0) {
+                        return;
+                    }
+                }
                 let startIsEmitted = true;
                 if (!(node.flags & NodeFlags.Export)) {
                     startIsEmitted = tryEmitStartOfVariableDeclarationList(node.declarationList);
@@ -3065,7 +3089,7 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
                     startIsEmitted = tryEmitStartOfVariableDeclarationList(node.declarationList);
                 }
                 if (startIsEmitted) {
-                    emitCommaList(node.declarationList.declarations);
+                    emitCommaList(variableDeclarations);
                     write(";");
                 }
                 else {
@@ -3075,7 +3099,7 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
                     }
                 }
                 if (languageVersion < ScriptTarget.ES6 && node.parent === currentSourceFile) {
-                    forEach(node.declarationList.declarations, emitExportVariableAssignments);
+                    forEach(variableDeclarations, emitExportVariableAssignments);
                 }
             }
 
