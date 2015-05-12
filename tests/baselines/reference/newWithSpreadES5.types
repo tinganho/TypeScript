@@ -36,6 +36,13 @@ interface C {
 >B : typeof B
 }
 
+interface D {
+>D : D
+
+    1: typeof B;
+>B : typeof B
+}
+
 var a: string[];
 >a : string[]
 
@@ -63,6 +70,10 @@ var g: C[];
 var h: { [key: string]: C };
 >h : { [key: string]: C; }
 >key : string
+>C : C
+
+var i: C[][];
+>i : C[][]
 >C : C
 
 // Basic expression
@@ -387,6 +398,43 @@ new h["a-b"]["a-b"](1, 2, ...a, "string");
 >h : { [key: string]: C; }
 >"a-b" : string
 >"a-b" : string
+>1 : number
+>2 : number
+>...a : string
+>a : string[]
+>"string" : string
+
+// Element access expression with a number
+new i["a-b"][1](1, 2, "string");
+>new i["a-b"][1](1, 2, "string") : any
+>i["a-b"][1] : any
+>i["a-b"] : any
+>i : C[][]
+>"a-b" : string
+>1 : number
+>1 : number
+>2 : number
+>"string" : string
+
+new i["a-b"][1](1, 2, ...a);
+>new i["a-b"][1](1, 2, ...a) : any
+>i["a-b"][1] : any
+>i["a-b"] : any
+>i : C[][]
+>"a-b" : string
+>1 : number
+>1 : number
+>2 : number
+>...a : string
+>a : string[]
+
+new i["a-b"][1](1, 2, ...a, "string");
+>new i["a-b"][1](1, 2, ...a, "string") : any
+>i["a-b"][1] : any
+>i["a-b"] : any
+>i : C[][]
+>"a-b" : string
+>1 : number
 >1 : number
 >2 : number
 >...a : string

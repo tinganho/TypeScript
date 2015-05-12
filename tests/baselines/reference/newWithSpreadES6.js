@@ -17,6 +17,10 @@ interface C {
     "a-b": typeof B;
 }
 
+interface D {
+    1: typeof B;
+}
+
 var a: string[];
 var b: A;
 var c: C;
@@ -24,6 +28,7 @@ var d: A[];
 var e: { [key: string]: A };
 var g: C[];
 var h: { [key: string]: C };
+var i: C[][];
 
 // Basic expression
 new f(1, 2, "string");
@@ -75,6 +80,11 @@ new h["a-b"]["a-b"](1, 2, "string");
 new h["a-b"]["a-b"](1, 2, ...a);
 new h["a-b"]["a-b"](1, 2, ...a, "string");
 
+// Element access expression with a number
+new i["a-b"][1](1, 2, "string");
+new i["a-b"][1](1, 2, ...a);
+new i["a-b"][1](1, 2, ...a, "string");
+
 //// [newWithSpreadES6.js]
 function f(x, y, ...z) {
 }
@@ -89,6 +99,7 @@ var d;
 var e;
 var g;
 var h;
+var i;
 // Basic expression
 new f(1, 2, "string");
 new f(1, 2, ...a);
@@ -129,3 +140,7 @@ new g[1]["a-b"](1, 2, ...a, "string");
 new h["a-b"]["a-b"](1, 2, "string");
 new h["a-b"]["a-b"](1, 2, ...a);
 new h["a-b"]["a-b"](1, 2, ...a, "string");
+// Element access expression with a number
+new i["a-b"][1](1, 2, "string");
+new i["a-b"][1](1, 2, ...a);
+new i["a-b"][1](1, 2, ...a, "string");

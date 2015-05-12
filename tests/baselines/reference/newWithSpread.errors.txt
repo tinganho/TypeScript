@@ -1,26 +1,28 @@
-tests/cases/conformance/expressions/functionCalls/newWithSpread.ts(29,13): error TS2472: Spread operator in 'new' expressions is only available when targeting ECMAScript 5 and higher.
-tests/cases/conformance/expressions/functionCalls/newWithSpread.ts(30,13): error TS2472: Spread operator in 'new' expressions is only available when targeting ECMAScript 5 and higher.
-tests/cases/conformance/expressions/functionCalls/newWithSpread.ts(34,15): error TS2472: Spread operator in 'new' expressions is only available when targeting ECMAScript 5 and higher.
-tests/cases/conformance/expressions/functionCalls/newWithSpread.ts(35,15): error TS2472: Spread operator in 'new' expressions is only available when targeting ECMAScript 5 and higher.
-tests/cases/conformance/expressions/functionCalls/newWithSpread.ts(39,17): error TS2472: Spread operator in 'new' expressions is only available when targeting ECMAScript 5 and higher.
-tests/cases/conformance/expressions/functionCalls/newWithSpread.ts(40,17): error TS2472: Spread operator in 'new' expressions is only available when targeting ECMAScript 5 and higher.
-tests/cases/conformance/expressions/functionCalls/newWithSpread.ts(44,18): error TS2472: Spread operator in 'new' expressions is only available when targeting ECMAScript 5 and higher.
-tests/cases/conformance/expressions/functionCalls/newWithSpread.ts(45,18): error TS2472: Spread operator in 'new' expressions is only available when targeting ECMAScript 5 and higher.
-tests/cases/conformance/expressions/functionCalls/newWithSpread.ts(49,22): error TS2472: Spread operator in 'new' expressions is only available when targeting ECMAScript 5 and higher.
-tests/cases/conformance/expressions/functionCalls/newWithSpread.ts(50,22): error TS2472: Spread operator in 'new' expressions is only available when targeting ECMAScript 5 and higher.
-tests/cases/conformance/expressions/functionCalls/newWithSpread.ts(54,13): error TS2472: Spread operator in 'new' expressions is only available when targeting ECMAScript 5 and higher.
-tests/cases/conformance/expressions/functionCalls/newWithSpread.ts(55,13): error TS2472: Spread operator in 'new' expressions is only available when targeting ECMAScript 5 and higher.
-tests/cases/conformance/expressions/functionCalls/newWithSpread.ts(59,20): error TS2472: Spread operator in 'new' expressions is only available when targeting ECMAScript 5 and higher.
-tests/cases/conformance/expressions/functionCalls/newWithSpread.ts(60,20): error TS2472: Spread operator in 'new' expressions is only available when targeting ECMAScript 5 and higher.
-tests/cases/conformance/expressions/functionCalls/newWithSpread.ts(64,22): error TS2472: Spread operator in 'new' expressions is only available when targeting ECMAScript 5 and higher.
-tests/cases/conformance/expressions/functionCalls/newWithSpread.ts(65,22): error TS2472: Spread operator in 'new' expressions is only available when targeting ECMAScript 5 and higher.
-tests/cases/conformance/expressions/functionCalls/newWithSpread.ts(69,23): error TS2472: Spread operator in 'new' expressions is only available when targeting ECMAScript 5 and higher.
-tests/cases/conformance/expressions/functionCalls/newWithSpread.ts(70,23): error TS2472: Spread operator in 'new' expressions is only available when targeting ECMAScript 5 and higher.
-tests/cases/conformance/expressions/functionCalls/newWithSpread.ts(74,27): error TS2472: Spread operator in 'new' expressions is only available when targeting ECMAScript 5 and higher.
-tests/cases/conformance/expressions/functionCalls/newWithSpread.ts(75,27): error TS2472: Spread operator in 'new' expressions is only available when targeting ECMAScript 5 and higher.
+tests/cases/conformance/expressions/functionCalls/newWithSpread.ts(34,13): error TS2472: Spread operator in 'new' expressions is only available when targeting ECMAScript 5 and higher.
+tests/cases/conformance/expressions/functionCalls/newWithSpread.ts(35,13): error TS2472: Spread operator in 'new' expressions is only available when targeting ECMAScript 5 and higher.
+tests/cases/conformance/expressions/functionCalls/newWithSpread.ts(39,15): error TS2472: Spread operator in 'new' expressions is only available when targeting ECMAScript 5 and higher.
+tests/cases/conformance/expressions/functionCalls/newWithSpread.ts(40,15): error TS2472: Spread operator in 'new' expressions is only available when targeting ECMAScript 5 and higher.
+tests/cases/conformance/expressions/functionCalls/newWithSpread.ts(44,17): error TS2472: Spread operator in 'new' expressions is only available when targeting ECMAScript 5 and higher.
+tests/cases/conformance/expressions/functionCalls/newWithSpread.ts(45,17): error TS2472: Spread operator in 'new' expressions is only available when targeting ECMAScript 5 and higher.
+tests/cases/conformance/expressions/functionCalls/newWithSpread.ts(49,18): error TS2472: Spread operator in 'new' expressions is only available when targeting ECMAScript 5 and higher.
+tests/cases/conformance/expressions/functionCalls/newWithSpread.ts(50,18): error TS2472: Spread operator in 'new' expressions is only available when targeting ECMAScript 5 and higher.
+tests/cases/conformance/expressions/functionCalls/newWithSpread.ts(54,22): error TS2472: Spread operator in 'new' expressions is only available when targeting ECMAScript 5 and higher.
+tests/cases/conformance/expressions/functionCalls/newWithSpread.ts(55,22): error TS2472: Spread operator in 'new' expressions is only available when targeting ECMAScript 5 and higher.
+tests/cases/conformance/expressions/functionCalls/newWithSpread.ts(59,13): error TS2472: Spread operator in 'new' expressions is only available when targeting ECMAScript 5 and higher.
+tests/cases/conformance/expressions/functionCalls/newWithSpread.ts(60,13): error TS2472: Spread operator in 'new' expressions is only available when targeting ECMAScript 5 and higher.
+tests/cases/conformance/expressions/functionCalls/newWithSpread.ts(64,20): error TS2472: Spread operator in 'new' expressions is only available when targeting ECMAScript 5 and higher.
+tests/cases/conformance/expressions/functionCalls/newWithSpread.ts(65,20): error TS2472: Spread operator in 'new' expressions is only available when targeting ECMAScript 5 and higher.
+tests/cases/conformance/expressions/functionCalls/newWithSpread.ts(69,22): error TS2472: Spread operator in 'new' expressions is only available when targeting ECMAScript 5 and higher.
+tests/cases/conformance/expressions/functionCalls/newWithSpread.ts(70,22): error TS2472: Spread operator in 'new' expressions is only available when targeting ECMAScript 5 and higher.
+tests/cases/conformance/expressions/functionCalls/newWithSpread.ts(74,23): error TS2472: Spread operator in 'new' expressions is only available when targeting ECMAScript 5 and higher.
+tests/cases/conformance/expressions/functionCalls/newWithSpread.ts(75,23): error TS2472: Spread operator in 'new' expressions is only available when targeting ECMAScript 5 and higher.
+tests/cases/conformance/expressions/functionCalls/newWithSpread.ts(79,27): error TS2472: Spread operator in 'new' expressions is only available when targeting ECMAScript 5 and higher.
+tests/cases/conformance/expressions/functionCalls/newWithSpread.ts(80,27): error TS2472: Spread operator in 'new' expressions is only available when targeting ECMAScript 5 and higher.
+tests/cases/conformance/expressions/functionCalls/newWithSpread.ts(84,23): error TS2472: Spread operator in 'new' expressions is only available when targeting ECMAScript 5 and higher.
+tests/cases/conformance/expressions/functionCalls/newWithSpread.ts(85,23): error TS2472: Spread operator in 'new' expressions is only available when targeting ECMAScript 5 and higher.
 
 
-==== tests/cases/conformance/expressions/functionCalls/newWithSpread.ts (20 errors) ====
+==== tests/cases/conformance/expressions/functionCalls/newWithSpread.ts (22 errors) ====
     
     function f(x: number, y: number, ...z: string[]) {
     }
@@ -39,6 +41,10 @@ tests/cases/conformance/expressions/functionCalls/newWithSpread.ts(75,27): error
         "a-b": typeof B;
     }
     
+    interface D {
+        1: typeof B;
+    }
+    
     var a: string[];
     var b: A;
     var c: C;
@@ -46,6 +52,7 @@ tests/cases/conformance/expressions/functionCalls/newWithSpread.ts(75,27): error
     var e: { [key: string]: A };
     var g: C[];
     var h: { [key: string]: C };
+    var i: C[][];
     
     // Basic expression
     new f(1, 2, "string");
@@ -135,4 +142,13 @@ tests/cases/conformance/expressions/functionCalls/newWithSpread.ts(75,27): error
 !!! error TS2472: Spread operator in 'new' expressions is only available when targeting ECMAScript 5 and higher.
     new h["a-b"]["a-b"](1, 2, ...a, "string");
                               ~~~~
+!!! error TS2472: Spread operator in 'new' expressions is only available when targeting ECMAScript 5 and higher.
+    
+    // Element access expression with a number
+    new i["a-b"][1](1, 2, "string");
+    new i["a-b"][1](1, 2, ...a);
+                          ~~~~
+!!! error TS2472: Spread operator in 'new' expressions is only available when targeting ECMAScript 5 and higher.
+    new i["a-b"][1](1, 2, ...a, "string");
+                          ~~~~
 !!! error TS2472: Spread operator in 'new' expressions is only available when targeting ECMAScript 5 and higher.

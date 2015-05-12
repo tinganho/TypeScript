@@ -17,6 +17,10 @@ interface C {
     "a-b": typeof B;
 }
 
+interface D {
+    1: typeof B;
+}
+
 var a: string[];
 var b: A;
 var c: C;
@@ -24,6 +28,7 @@ var d: A[];
 var e: { [key: string]: A };
 var g: C[];
 var h: { [key: string]: C };
+var i: C[][];
 
 // Basic expression
 new f(1, 2, "string");
@@ -75,6 +80,11 @@ new h["a-b"]["a-b"](1, 2, "string");
 new h["a-b"]["a-b"](1, 2, ...a);
 new h["a-b"]["a-b"](1, 2, ...a, "string");
 
+// Element access expression with a number
+new i["a-b"][1](1, 2, "string");
+new i["a-b"][1](1, 2, ...a);
+new i["a-b"][1](1, 2, ...a, "string");
+
 //// [newWithSpreadES5.js]
 function f(x, y) {
     var z = [];
@@ -98,6 +108,7 @@ var d;
 var e;
 var g;
 var h;
+var i;
 // Basic expression
 new f(1, 2, "string");
 new (f.bind.apply(f, [void 0].concat([1, 2].concat(a))));
@@ -138,4 +149,8 @@ new ((_f = g[1])["a-b"].bind.apply(_f["a-b"], [void 0].concat([1, 2].concat(a, [
 new h["a-b"]["a-b"](1, 2, "string");
 new ((_g = h["a-b"])["a-b"].bind.apply(_g["a-b"], [void 0].concat([1, 2].concat(a))));
 new ((_h = h["a-b"])["a-b"].bind.apply(_h["a-b"], [void 0].concat([1, 2].concat(a, ["string"]))));
-var _a, _b, _c, _d, _e, _f, _g, _h;
+// Element access expression with a number
+new i["a-b"][1](1, 2, "string");
+new ((_j = i["a-b"])[1].bind.apply(_j[1], [void 0].concat([1, 2].concat(a))));
+new ((_k = i["a-b"])[1].bind.apply(_k[1], [void 0].concat([1, 2].concat(a, ["string"]))));
+var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k;
