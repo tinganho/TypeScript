@@ -394,6 +394,15 @@ module ts {
         originalKeywordKind?: SyntaxKind;              // Original syntaxKind which get set so that we can report an error later
     }
 
+    /** Target and accessor from a function like call. Target is the object that represent the default call context
+      * "this". The accessor is a property member of the target used in a call expression. This interface is only 
+      * used in the emitter for emitting expressions with spread syntax.*/
+    /* @internal */
+    export interface CallTargetAndAccessor {
+        target?: Expression;
+        accessor?: Expression;
+    }
+
     export interface QualifiedName extends Node {
         // Must have same layout as PropertyAccess
         left: EntityName;

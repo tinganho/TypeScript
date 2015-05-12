@@ -1809,28 +1809,7 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
             }
 
             function emitCallWithSpread(node: CallExpression) {
-                let target: Expression;
-                let expr = skipParentheses(node.expression);
-                if (expr.kind === SyntaxKind.PropertyAccessExpression) {
-                    // Target will be emitted as "this" argument
-                    target = emitCallTarget((<PropertyAccessExpression>expr).expression);
-                    write(".");
-                    emit((<PropertyAccessExpression>expr).name);
-                }
-                else if (expr.kind === SyntaxKind.ElementAccessExpression) {
-                    // Target will be emitted as "this" argument
-                    target = emitCallTarget((<PropertyAccessExpression>expr).expression);
-                    write("[");
-                    emit((<ElementAccessExpression>expr).argumentExpression);
-                    write("]");
-                }
-                else if (expr.kind === SyntaxKind.SuperKeyword) {
-                    target = expr;
-                    write("_super");
-                }
-                else {
-                    emit(node.expression);
-                }
+                let { target } = emitCallTargetAndAccessor(node.expression);
                 write(".apply(");
                 if (target) {
                     if (target.kind === SyntaxKind.SuperKeyword) {
@@ -1881,13 +1860,109 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
                 }
             }
 
+            /** Emit call target and accessor from an expression. The call target represents
+              * the default call context of "this". If it can be decided — this function will
+              * return the node representhing the call target — otherwise it returns undefined.
+              * The accessor is a property accessor of the target. If an expression has an 
+              * accessor this function will both emit it and return it. To support spread syntax 
+              * in TypeScript we sometimes need to emit the target twice in an expression that 
+              * only expresses it once. The target could be a call expression and therefore calling 
+              * it twice would alter its' state differently as oppose to calling it once. This 
+              * is very handy for those situations because it is emitting and returning the call 
+              * target and the accessor. */
+            function emitCallTargetAndAccessor(node: Expression): CallTargetAndAccessor {
+                node = skipParentheses(node);
+                let target: Expression;
+                let accessor: Expression;
+                if (node.kind === SyntaxKind.PropertyAccessExpression) {
+                    // Target will be emitted as "this" argument
+                    target = emitCallTarget((<PropertyAccessExpression>node).expression);
+                    accessor = (<PropertyAccessExpression>node).name;
+                    write(".");
+                    emit(accessor);
+                }
+                else if (node.kind === SyntaxKind.ElementAccessExpression) {
+                    // Target will be emitted as "this" argument
+                    target = emitCallTarget((<PropertyAccessExpression>node).expression);
+                    accessor = (<ElementAccessExpression>node).argumentExpression;
+                    write("[");
+                    emit(accessor);
+                    write("]");
+                }
+                else if (node.kind === SyntaxKind.SuperKeyword) {
+                    target = node;
+                    write("_super");
+                }
+                else {
+                    emit(node);
+                }
+                return { target, accessor };
+            }
+
             function emitNewExpression(node: NewExpression) {
                 write("new ");
-                emit(node.expression);
-                if (node.arguments) {
+
+                // Spread operator logic can be supported in new expressions in ES5 using a combination
+                // of Function.prototype.bind() and Function.prototype.apply().
+                //
+                //     Example 1, with a non property accessor constructor:
+                //
+                //         var arguments = [1, 2, 3, 4, 5];
+                //         new Array(...arguments);
+                //
+                //         Could be transpiled into ES5:
+                //
+                //         var arguments = [1, 2, 3, 4, 5];
+                //         new (Array.bind.apply(Array, [void 0].concat(arguments)));
+                //
+                //     Example 2, with a property accessor constructor:
+                //
+                //         var arguments = [1, 2, 3, 4, 5];
+                //         new object.Array(...arguments);
+                //
+                //         Could be transpiled into ES5:
+                //
+                //         var arguments = [1, 2, 3, 4, 5];
+                //         new ((_a = object.Array).bind.apply(_a, [void 0].concat(arguments)));
+                //         var _a;
+                //
+                // `[void 0]` is the first argument which represents `thisArg` to the bind method above. 
+                // And `thisArg` will be set to the return value of the constructor when instantiated 
+                // with the new operator — regardless of any value we set `thisArg` to. Thus, we set it 
+                // to an empty object, `void 0`.
+                if (languageVersion === ScriptTarget.ES5 &&
+                    node.arguments &&
+                    hasSpreadElement(node.arguments)) {
+
                     write("(");
-                    emitCommaList(node.arguments);
-                    write(")");
+                    let { target, accessor } = emitCallTargetAndAccessor(node.expression);
+                    write(".bind.apply(");
+                    if (target) {
+                        emit(target);
+                        if (accessor.kind === SyntaxKind.Identifier) {
+                            write(".");
+                            emit(accessor);
+                        }
+                        else {
+                            write("[");
+                            emit(accessor);
+                            write("]");
+                        }
+                    }
+                    else {
+                        emit(node.expression);
+                    }
+                    write(", [void 0].concat(");
+                    emitListWithSpread(node.arguments, /*multiline*/false, /*trailingComma*/false);
+                    write(")))");
+                }
+                else {
+                    emit(node.expression);
+                    if (node.arguments) {
+                        write("(");
+                        emitCommaList(node.arguments);
+                        write(")");
+                    }
                 }
             }
 
