@@ -1448,6 +1448,14 @@
         "category": "Error",
         "code": 2503
     },
+    "Type-guard target must have a matching parameter.": {
+        "category": "Error",
+        "code": 2504
+    },
+    "Type declaration expected.": {
+        "category": "Error",
+        "code": 2505
+    },
 
     "Import declaration '{0}' is using private name '{1}'.": {
         "category": "Error",

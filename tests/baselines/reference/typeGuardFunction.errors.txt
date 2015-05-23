@@ -1,0 +1,89 @@
+tests/cases/conformance/expressions/typeGuards/typeGuardFunction.ts(55,18): error TS2504: Type-guard target must have a matching parameter.
+tests/cases/conformance/expressions/typeGuards/typeGuardFunction.ts(55,20): error TS1005: 'is' expected.
+tests/cases/conformance/expressions/typeGuards/typeGuardFunction.ts(57,24): error TS2505: Type declaration expected.
+tests/cases/conformance/expressions/typeGuards/typeGuardFunction.ts(59,19): error TS2504: Type-guard target must have a matching parameter.
+tests/cases/conformance/expressions/typeGuards/typeGuardFunction.ts(64,4): error TS2339: Property 'baz' does not exist on type 'A'.
+tests/cases/conformance/expressions/typeGuards/typeGuardFunction.ts(67,4): error TS2339: Property 'foo' does not exist on type 'A'.
+
+
+==== tests/cases/conformance/expressions/typeGuards/typeGuardFunction.ts (6 errors) ====
+    
+    class A {
+    	kind: number;
+    }
+    
+    class B {
+    }
+    
+    class Foo extends A {
+        foo() { 
+        }
+    }
+    
+    class Bar extends A {
+    	bar() {	
+    	}
+    }
+    
+    class Baz extends B {
+    	baz() {
+    	}
+    }
+    
+    function isFoo(x: A) x is Foo {
+    	return x.kind === 1; 
+    }
+    
+    function isBar(x: A) x is Bar {
+    	return x.kind === 2;
+    }
+    
+    function isBaz(x: B) x is Baz {
+    }
+    
+    function isNonGuard(x) {
+    }
+    
+    var a: A;
+    var b: B;
+    if(isFoo(a)) {
+    	a.foo();
+    }
+    if(isBar(a)) {
+    	a.bar();
+    }
+    if(isBar(a)) {
+    	var alias = a;
+    	alias.bar();
+    }
+    
+    /**
+     * Errors
+     */
+    
+    function isQux() x {
+                     ~
+!!! error TS2504: Type-guard target must have a matching parameter.
+                       ~
+!!! error TS1005: 'is' expected.
+    }
+    function isPsy(x) x is {
+                           ~
+!!! error TS2505: Type declaration expected.
+    }
+    function isPee(y) x is A {
+                      ~
+!!! error TS2504: Type-guard target must have a matching parameter.
+    }
+    function isPoo(x: B) x is A {
+    }
+    if(isBaz(b)) {
+    	a.baz();
+    	  ~~~
+!!! error TS2339: Property 'baz' does not exist on type 'A'.
+    }
+    if(isNonGuard(a)) {
+    	a.foo();
+    	  ~~~
+!!! error TS2339: Property 'foo' does not exist on type 'A'.
+    }

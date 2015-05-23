@@ -143,6 +143,9 @@ module Utils {
             var currentPos = 0;
             ts.forEachChild(node,
                 child => {
+                    if (child.pos < currentPos) {
+                        console.log(child.pos, currentPos, child, node);
+                    }
                     assert.isFalse(child.pos < currentPos, "child.pos < currentPos");
                     currentPos = child.end;
                 },

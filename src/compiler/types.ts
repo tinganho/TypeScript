@@ -137,6 +137,7 @@ module ts {
         ConstructorKeyword,
         DeclareKeyword,
         GetKeyword,
+        IsKeyword,
         ModuleKeyword,
         NamespaceKeyword,
         RequireKeyword,
@@ -169,6 +170,7 @@ module ts {
         ConstructSignature,
         IndexSignature,
         // Type
+        TypeGuardType,
         TypeReference,
         FunctionType,
         ConstructorType,
@@ -571,6 +573,11 @@ module ts {
     export interface TypeReferenceNode extends TypeNode {
         typeName: EntityName;
         typeArguments?: NodeArray<TypeNode>;
+    }
+    
+    export interface TypeGuardTypeNode extends TypeNode {
+        target?: Identifier;
+        type: TypeNode;
     }
 
     export interface TypeQueryNode extends TypeNode {
@@ -1318,6 +1325,7 @@ module ts {
         UnionProperty           = 0x10000000,  // Property in union type
         Optional                = 0x20000000,  // Optional property
         ExportStar              = 0x40000000,  // Export * declaration
+        TypeGuard               = 0x80000000,  // TypeGuard
 
         Enum = RegularEnum | ConstEnum,
         Variable = FunctionScopedVariable | BlockScopedVariable,
@@ -1455,8 +1463,9 @@ module ts {
         /* @internal */ 
         ContainsUndefinedOrNull = 0x00040000,  // Type is or contains Undefined or Null type
         /* @internal */ 
-        ContainsObjectLiteral = 0x00080000,  // Type is or contains object literal type
+        ContainsObjectLiteral   = 0x00080000,  // Type is or contains object literal type
         ESSymbol                = 0x00100000,  // Type of symbol primitive introduced in ES6
+        TypeGuard               = 0x00200000,  // Type of symbol primitive introduced in ES6
 
         /* @internal */ 
         Intrinsic = Any | String | Number | Boolean | ESSymbol | Void | Undefined | Null,
@@ -1485,6 +1494,11 @@ module ts {
     // String literal types (TypeFlags.StringLiteral)
     export interface StringLiteralType extends Type {
         text: string;  // Text of string literal
+    }
+    
+    export interface TypeGuardType extends Type {
+        parameterIndex?: number; // Call expression argument
+        type: Type;
     }
 
     // Object types (TypeFlags.ObjectType)

@@ -2835,7 +2835,7 @@ module ts {
             let numberIndexType = getUnionIndexType(type.types, IndexKind.Number);
             setObjectTypeMembers(type, emptySymbols, callSignatures, constructSignatures, stringIndexType, numberIndexType);
         }
-
+        
         function resolveAnonymousTypeMembers(type: ObjectType) {
             let symbol = type.symbol;
             let members: SymbolTable;
@@ -3690,6 +3690,39 @@ module ts {
             }
             return links.resolvedType;
         }
+        
+        function getTypeGuardType(node: TypeGuardTypeNode): Type {
+            let type = <TypeGuardType>createType(TypeFlags.TypeGuard);
+            type.parameterIndex = -1;
+            if (node.target) {
+                let functionDeclaration = <SignatureDeclaration>node.target.parent.parent;
+                for (let i = 0; i < functionDeclaration.parameters.length; i++) {
+                    let param = functionDeclaration.parameters[i];
+                    if (param.name.kind === SyntaxKind.Identifier && (<Identifier>param.name).text === node.target.text) {
+                        type.parameterIndex = i;
+                        break;
+                    }
+                }
+            }
+            if (type.parameterIndex === -1) {
+                error(node.target, Diagnostics.Type_guard_target_must_have_a_matching_parameter);
+            }
+            if (node.type) {
+                type.type = getTypeFromTypeNode(node.type);
+            }
+            else {
+                type.type = anyType;
+            }
+            return type;
+        }
+
+        function getTypeFromTypeGuardTypeNode(node: TypeGuardTypeNode): Type {
+            let links = getNodeLinks(node);
+            if (!links.resolvedType) {
+                links.resolvedType = getTypeGuardType(node);
+            }
+            return links.resolvedType;
+        }
 
         function getTypeFromTypeNode(node: TypeNode): Type {
             switch (node.kind) {
@@ -3705,6 +3738,8 @@ module ts {
                     return esSymbolType;
                 case SyntaxKind.VoidKeyword:
                     return voidType;
+                case SyntaxKind.TypeGuardType:
+                    return getTypeFromTypeGuardTypeNode(<TypeGuardTypeNode>node);
                 case SyntaxKind.StringLiteral:
                     return getTypeFromStringLiteral(<StringLiteral>node);
                 case SyntaxKind.TypeReference:
@@ -3880,6 +3915,10 @@ module ts {
 
         function instantiateType(type: Type, mapper: TypeMapper): Type {
             if (mapper !== identityMapper) {
+                if (type.flags & TypeFlags.TypeGuard) {
+                    (<TypeGuardType>type).type = instantiateType((<TypeGuardType>type).type, mapper);
+                    return type;
+                } 
                 if (type.flags & TypeFlags.TypeParameter) {
                     return mapper(<TypeParameter>type);
                 }
@@ -4003,7 +4042,7 @@ module ts {
             let elaborateErrors = false;
 
             Debug.assert(relation !== identityRelation || !errorNode, "no error reporting in identity checking");
-
+            
             let result = isRelatedTo(source, target, errorNode !== undefined, headMessage);
             if (overflow) {
                 error(errorNode, Diagnostics.Excessive_stack_depth_comparing_types_0_and_1, typeToString(source), typeToString(target));
@@ -4039,6 +4078,7 @@ module ts {
                 // both types are the same - covers 'they are the same primitive type or both are Any' or the same type parameter cases
                 if (source === target) return Ternary.True;
                 if (relation !== identityRelation) {
+                    if (target.flags & TypeFlags.TypeGuard) return Ternary.True;
                     if (target.flags & TypeFlags.Any) return Ternary.True;
                     if (source === undefinedType) return Ternary.True;
                     if (source === nullType && target !== undefinedType) return Ternary.True;
@@ -4911,10 +4951,18 @@ module ts {
                 }
                 return true;
             }
-
+            
+            /** inferring types */
             function inferFromTypes(source: Type, target: Type) {
                 if (source === anyFunctionType) {
                     return;
+                }
+                
+                if (target.flags & TypeFlags.TypeGuard) {
+                    target = (<TypeGuardType>target).type;
+                }
+                if (source.flags & TypeFlags.TypeGuard) {
+                    source = (<TypeGuardType>source).type;
                 }
                 if (target.flags & TypeFlags.TypeParameter) {
                     // If target is a type parameter, make an inference
@@ -5277,6 +5325,18 @@ module ts {
                     switch (node.kind) {
                         case SyntaxKind.IfStatement:
                             // In a branch of an if statement, narrow based on controlling expression
+                            if ((<IfStatement>node).expression.kind === SyntaxKind.CallExpression) {
+                                let callType = checkCallExpression(<CallExpression>(<IfStatement>node).expression);
+                                if (callType.flags & TypeFlags.TypeGuard) {
+                                    let callExpr = <CallExpression>(<IfStatement>node).expression;
+                                    if (callExpr.arguments && callExpr.arguments[(<TypeGuardType>callType).parameterIndex]) {
+                                        if (getSymbolAtLocation(callExpr.arguments[(<TypeGuardType>callType).parameterIndex]) === symbol) {
+                                            type = (<TypeGuardType>callType).type;
+                                            break loop;
+                                        }
+                                    }
+                                }
+                            }
                             if (child !== (<IfStatement>node).expression) {
                                 narrowedType = narrowType(type, (<IfStatement>node).expression, /*assumeTrue*/ child === (<IfStatement>node).thenStatement);
                             }
@@ -6868,7 +6928,7 @@ module ts {
             let isTaggedTemplate = node.kind === SyntaxKind.TaggedTemplateExpression;
 
             let typeArguments: TypeNode[];
-
+            
             if (!isTaggedTemplate) {
                 typeArguments = getEffectiveTypeArguments(<CallExpression>node);
 
@@ -6956,6 +7016,7 @@ module ts {
                 result = chooseOverload(candidates, assignableRelation);
             }
             if (result) {
+//                console.log('resolveCall', result.resolvedReturnType && result.resolvedReturnType.flags)
                 return result;
             }
 
@@ -7027,9 +7088,11 @@ module ts {
                                 typeArgumentsAreValid = checkTypeArguments(candidate, typeArguments, typeArgumentTypes, /*reportErrors*/ false)
                             }
                             else {
+                                /** Bookmark: Here is where (time) => item is T fails */
                                 inferTypeArguments(candidate, args, excludeArgument, inferenceContext);
                                 typeArgumentsAreValid = inferenceContext.failedTypeParameterIndex === undefined;
                                 typeArgumentTypes = inferenceContext.inferredTypes;
+//                                console.log('chooseOverload', typeArgumentTypes)
                             }
                             if (!typeArgumentsAreValid) {
                                 break;
@@ -7085,7 +7148,7 @@ module ts {
 
             let funcType = checkExpression(node.expression);
             let apparentType = getApparentType(funcType);
-
+            
             if (apparentType === unknownType) {
                 // Another error has already been reported
                 return resolveErrorCall(node);
@@ -7096,7 +7159,7 @@ module ts {
             // Function interface, since they have none by default. This is a bit of a leap of faith
             // that the user will not add any.
             let callSignatures = getSignaturesOfType(apparentType, SignatureKind.Call);
-
+            
             let constructSignatures = getSignaturesOfType(apparentType, SignatureKind.Construct);
             // TS 1.0 spec: 4.12
             // If FuncExpr is of type Any, or of an object type that has no call or construct signatures
@@ -8231,7 +8294,7 @@ module ts {
             checkTypeParameters(node.typeParameters);
 
             forEach(node.parameters, checkParameter);
-
+            
             if (node.type) {
                 checkSourceElement(node.type);
             }
@@ -8982,7 +9045,7 @@ module ts {
             checkGrammarDeclarationNameInStrictMode(node);
             checkDecorators(node);
             checkSignatureDeclaration(node);
-
+            
             // Do not use hasDynamicName here, because that returns false for well known symbols.
             // We want to perform checkComputedPropertyName for all computed properties, including
             // well known symbols.
@@ -9013,10 +9076,21 @@ module ts {
                     }
                 }
             }
-
+            
             checkSourceElement(node.body);
-            if (node.type && !isAccessor(node.kind) && !node.asteriskToken) {
-                checkIfNonVoidFunctionHasReturnExpressionsOrSingleThrowStatment(node, getTypeFromTypeNode(node.type));
+            if (node.type) {
+                if (!isAccessor(node.kind) && !node.asteriskToken) {
+                    checkIfNonVoidFunctionHasReturnExpressionsOrSingleThrowStatment(node, getTypeFromTypeNode(node.type));
+                }
+                let type = getTypeFromTypeNode(<TypeGuardTypeNode>node.type);
+                if (type.flags === TypeFlags.TypeGuard && (<TypeGuardType>type).parameterIndex !== -1) {
+                    checkTypeAssignableTo(
+                        (<TypeGuardType>type).type,
+                        getTypeAtLocation(node.parameters[(<TypeGuardType>type).parameterIndex]),
+                        (<TypeGuardTypeNode>node.type).type, 
+                        Diagnostics.Type_0_is_not_assignable_to_type_1
+                    );
+                }
             }
 
             // Report an implicit any error if there is no body, no explicit return type, and node is not a private method
@@ -9031,7 +9105,7 @@ module ts {
             if (node.kind === SyntaxKind.Block) {
                 checkGrammarStatementInAmbientContext(node);
             }
-
+            
             forEach(node.statements, checkSourceElement);
             if (isFunctionBlock(node) || node.kind === SyntaxKind.ModuleBlock) {
                 checkFunctionExpressionBodies(node);
@@ -10790,6 +10864,7 @@ module ts {
 
         function checkSourceElement(node: Node): void {
             if (!node) return;
+//            console.log('checkSourceElement', (<any>ts).SyntaxKind[node.kind])
             switch (node.kind) {
                 case SyntaxKind.TypeParameter:
                     return checkTypeParameter(<TypeParameterDeclaration>node);
