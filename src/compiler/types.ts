@@ -137,6 +137,7 @@ module ts {
         ConstructorKeyword,
         DeclareKeyword,
         GetKeyword,
+        IsKeyword,
         ModuleKeyword,
         NamespaceKeyword,
         RequireKeyword,
@@ -169,6 +170,7 @@ module ts {
         ConstructSignature,
         IndexSignature,
         // Type
+        TypeGuardType,
         TypeReference,
         FunctionType,
         ConstructorType,
@@ -571,6 +573,11 @@ module ts {
     export interface TypeReferenceNode extends TypeNode {
         typeName: EntityName;
         typeArguments?: NodeArray<TypeNode>;
+    }
+    
+    export interface TypeGuardTypeNode extends TypeNode {
+        target?: Identifier;
+        type: TypeNode;
     }
 
     export interface TypeQueryNode extends TypeNode {
@@ -1306,23 +1313,24 @@ module ts {
         SetAccessor             = 0x00010000,  // Set accessor
         Signature               = 0x00020000,  // Call, construct, or index signature
         TypeParameter           = 0x00040000,  // Type parameter
-        TypeAlias               = 0x00080000,  // Type alias
-        ExportValue             = 0x00100000,  // Exported value marker (see comment in declareModuleMember in binder)
-        ExportType              = 0x00200000,  // Exported type marker (see comment in declareModuleMember in binder)
-        ExportNamespace         = 0x00400000,  // Exported namespace marker (see comment in declareModuleMember in binder)
-        Alias                   = 0x00800000,  // An alias for another symbol (see comment in isAliasSymbolDeclaration in checker)
-        Instantiated            = 0x01000000,  // Instantiated symbol
-        Merged                  = 0x02000000,  // Merged symbol (created during program binding)
-        Transient               = 0x04000000,  // Transient symbol (created during type check)
-        Prototype               = 0x08000000,  // Prototype property (no source representation)
-        UnionProperty           = 0x10000000,  // Property in union type
-        Optional                = 0x20000000,  // Optional property
-        ExportStar              = 0x40000000,  // Export * declaration
+        TypeGuardType           = 0x00080000,  // Type-guard type
+        TypeAlias               = 0x00100000,  // Type alias
+        ExportValue             = 0x00200000,  // Exported value marker (see comment in declareModuleMember in binder)
+        ExportType              = 0x00400000,  // Exported type marker (see comment in declareModuleMember in binder)
+        ExportNamespace         = 0x00800000,  // Exported namespace marker (see comment in declareModuleMember in binder)
+        Alias                   = 0x01000000,  // An alias for another symbol (see comment in isAliasSymbolDeclaration in checker)
+        Instantiated            = 0x02000000,  // Instantiated symbol
+        Merged                  = 0x04000000,  // Merged symbol (created during program binding)
+        Transient               = 0x08000000,  // Transient symbol (created during type check)
+        Prototype               = 0x10000000,  // Prototype property (no source representation)
+        UnionProperty           = 0x20000000,  // Property in union type
+        Optional                = 0x40000000,  // Optional property
+        ExportStar              = 0x80000000,  // Export * declaration
 
         Enum = RegularEnum | ConstEnum,
         Variable = FunctionScopedVariable | BlockScopedVariable,
         Value = Variable | Property | EnumMember | Function | Class | Enum | ValueModule | Method | GetAccessor | SetAccessor,
-        Type = Class | Interface | Enum | TypeLiteral | ObjectLiteral | TypeParameter | TypeAlias,
+        Type = Class | Interface | Enum | TypeLiteral | ObjectLiteral | TypeParameter | TypeAlias | TypeGuardType,
         Namespace = ValueModule | NamespaceModule,
         Module = ValueModule | NamespaceModule,
         Accessor = GetAccessor | SetAccessor,
@@ -1349,6 +1357,7 @@ module ts {
         GetAccessorExcludes = Value & ~SetAccessor,
         SetAccessorExcludes = Value & ~GetAccessor,
         TypeParameterExcludes = Type & ~TypeParameter,
+        TypeGuardTypeExcludes = Type & ~TypeGuardType,
         TypeAliasExcludes = Type,
         AliasExcludes = Alias,
 
@@ -1448,15 +1457,16 @@ module ts {
         Reference               = 0x00001000,  // Generic type reference
         Tuple                   = 0x00002000,  // Tuple
         Union                   = 0x00004000,  // Union
-        Anonymous               = 0x00008000,  // Anonymous
+        TypeGuard               = 0x00008000,  // Type-guard
+        Anonymous               = 0x00010000,  // Anonymous
         /* @internal */ 
-        FromSignature           = 0x00010000,  // Created for signature assignment check
-        ObjectLiteral           = 0x00020000,  // Originates in an object literal
+        FromSignature           = 0x00020000,  // Created for signature assignment check
+        ObjectLiteral           = 0x00040000,  // Originates in an object literal
         /* @internal */ 
-        ContainsUndefinedOrNull = 0x00040000,  // Type is or contains Undefined or Null type
+        ContainsUndefinedOrNull = 0x00080000,  // Type is or contains Undefined or Null type
         /* @internal */ 
-        ContainsObjectLiteral = 0x00080000,  // Type is or contains object literal type
-        ESSymbol                = 0x00100000,  // Type of symbol primitive introduced in ES6
+        ContainsObjectLiteral   = 0x00100000,  // Type is or contains object literal type
+        ESSymbol                = 0x00200000,  // Type of symbol primitive introduced in ES6
 
         /* @internal */ 
         Intrinsic = Any | String | Number | Boolean | ESSymbol | Void | Undefined | Null,
@@ -1485,6 +1495,12 @@ module ts {
     // String literal types (TypeFlags.StringLiteral)
     export interface StringLiteralType extends Type {
         text: string;  // Text of string literal
+    }
+    
+    export interface TypeGuardType extends Type {
+        parameterName: string;
+        parameterIndex?: number; // Call expression argument
+        type: Type;
     }
 
     // Object types (TypeFlags.ObjectType)

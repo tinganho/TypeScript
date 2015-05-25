@@ -1498,6 +1498,13 @@ module ts {
                     else if (type.flags & TypeFlags.StringLiteral) {
                         writer.writeStringLiteral((<StringLiteralType>type).text);
                     }
+                    else if (type.flags & TypeFlags.TypeGuard) {
+                        writer.writeStringLiteral((<TypeGuardType>type).parameterName);
+                        writeSpace(writer);
+                        writeKeyword(writer, SyntaxKind.IsKeyword);
+                        writeSpace(writer);
+                        writeType((<TypeGuardType>type).type, flags);
+                    }
                     else {
                         // Should never get here
                         // { ... }
@@ -3690,6 +3697,48 @@ module ts {
             }
             return links.resolvedType;
         }
+        
+        function getTypeGuardType(node: TypeGuardTypeNode): Type {
+            let type = <TypeGuardType>createType(TypeFlags.TypeGuard);
+            let hasParameters = false;
+            type.parameterIndex = -1;
+            if (node.target) {
+                let functionDeclaration = <SignatureDeclaration>node.target.parent.parent;
+                if (functionDeclaration.parameters) {
+                    for (let i = 0; i < functionDeclaration.parameters.length; i++) {
+                        let param = functionDeclaration.parameters[i];
+                        if (param.name.kind === SyntaxKind.Identifier && (<Identifier>param.name).text === node.target.text) {
+                            type.parameterIndex = i;
+                            break;
+                        }
+                    }
+                    hasParameters = true;
+                }
+                type.parameterName = node.target.text;
+            }
+            if (hasParameters && type.parameterIndex === -1) {
+                error(node.target, Diagnostics.Type_guard_target_must_have_a_matching_parameter);
+            }
+            if (node.type) {
+                type.type = getTypeFromTypeNode(node.type);
+                if (type.type.flags & TypeFlags.TypeGuard) {
+                    error(node.type, Diagnostics.Can_t_define_a_type_guard_type_inside_a_type_guard_type);
+                }
+            }
+            else {
+                type.type = anyType;
+            }
+            type.symbol = node.symbol;
+            return type;
+        }
+
+        function getTypeFromTypeGuardTypeNode(node: TypeGuardTypeNode): Type {
+            let links = getNodeLinks(node);
+            if (!links.resolvedType) {
+                links.resolvedType = getTypeGuardType(node);
+            }
+            return links.resolvedType;
+        }
 
         function getTypeFromTypeNode(node: TypeNode): Type {
             switch (node.kind) {
@@ -3705,6 +3754,8 @@ module ts {
                     return esSymbolType;
                 case SyntaxKind.VoidKeyword:
                     return voidType;
+                case SyntaxKind.TypeGuardType:
+                    return getTypeFromTypeGuardTypeNode(<TypeGuardTypeNode>node);
                 case SyntaxKind.StringLiteral:
                     return getTypeFromStringLiteral(<StringLiteral>node);
                 case SyntaxKind.TypeReference:
@@ -3893,6 +3944,10 @@ module ts {
 
         function instantiateType(type: Type, mapper: TypeMapper): Type {
             if (mapper !== identityMapper) {
+                if (type.flags & TypeFlags.TypeGuard) {
+                    (<TypeGuardType>type).type = instantiateType((<TypeGuardType>type).type, mapper);
+                    return type;
+                } 
                 if (type.flags & TypeFlags.TypeParameter) {
                     return mapper(<TypeParameter>type);
                 }
@@ -4061,8 +4116,28 @@ module ts {
                         if (source.flags & TypeFlags.Any) return Ternary.True;
                         if (source === numberType && target.flags & TypeFlags.Enum) return Ternary.True;
                     }
+                    
+                    // Boolean is assignable to TypeGuard and vice versa.
+                    //
+                    //   Example:
+                    //   
+                    //     function a(x: any): x is A {
+                    //        return true; // Boolean type is assignable to a type-guard type.
+                    //     }
+                    //
+                    //     function b(a: boolean) {
+                    //     }
+                    //     b(a()); // Type-guard type is assignable to a boolean.
+                    //
+                    if (source.flags & TypeFlags.Boolean && target.flags & TypeFlags.TypeGuard) return Ternary.True;
+                    if (source.flags & TypeFlags.TypeGuard && target.flags & TypeFlags.Boolean) return Ternary.True;
                 }
                 let saveErrorInfo = errorInfo;
+                if (source.flags & TypeFlags.TypeGuard && target.flags & TypeFlags.TypeGuard) {
+                    if (result = isRelatedTo((<TypeGuardType>source).type, (<TypeGuardType>target).type, reportErrors, headMessage)) {
+                        return result;
+                    }
+                }
                 if (source.flags & TypeFlags.Union || target.flags & TypeFlags.Union) {
                     if (relation === identityRelation) {
                         if (source.flags & TypeFlags.Union && target.flags & TypeFlags.Union) {
@@ -4929,6 +5004,12 @@ module ts {
                 if (source === anyFunctionType) {
                     return;
                 }
+                if (target.flags & TypeFlags.TypeGuard) {
+                    target = (<TypeGuardType>target).type;
+                }
+                if (source.flags & TypeFlags.TypeGuard) {
+                    source = (<TypeGuardType>source).type;
+                }
                 if (target.flags & TypeFlags.TypeParameter) {
                     // If target is a type parameter, make an inference
                     let typeParameters = context.typeParameters;
@@ -5415,7 +5496,7 @@ module ts {
                 let targetType: Type;
                 let prototypeProperty = getPropertyOfType(rightType, "prototype");
                 if (prototypeProperty) {
-                    // Target type is type of the protoype property
+                    // Target type is type of the prototype property
                     let prototypePropertyType = getTypeOfSymbol(prototypeProperty);
                     if (prototypePropertyType !== anyType) {
                         targetType = prototypePropertyType;
@@ -5431,7 +5512,6 @@ module ts {
                     else if (rightType.flags & TypeFlags.Anonymous) {
                         constructSignatures = getSignaturesOfType(rightType, SignatureKind.Construct);
                     }
-
                     if (constructSignatures && constructSignatures.length) {
                         targetType = getUnionType(map(constructSignatures, signature => getReturnTypeOfSignature(getErasedSignature(signature))));
                     }
@@ -5450,11 +5530,32 @@ module ts {
 
                 return type;
             }
+            
+            function narrowTypeByCallExpression(type: Type, expr: CallExpression, assumeTrue: boolean): Type {
+                // Check that type is not any, assumed result is true.
+                if (type.flags & TypeFlags.Any || !assumeTrue) {
+                    return type;
+                }
+                let callType = checkCallExpression(expr);
+                if (callType.flags & TypeFlags.TypeGuard) {
+                    if (expr.arguments && expr.arguments[(<TypeGuardType>callType).parameterIndex]) {
+                        if (getSymbolAtLocation(expr.arguments[(<TypeGuardType>callType).parameterIndex]) === symbol) {
+                            let narrowedType = (<TypeGuardType>callType).type;
+                            if (isTypeAssignableTo(narrowedType, type)) {
+                               return narrowedType;
+                            }
+                        }
+                    }
+                }
+                return type;
+            }
 
             // Narrow the given type based on the given expression having the assumed boolean value. The returned type
             // will be a subtype or the same type as the argument.
             function narrowType(type: Type, expr: Expression, assumeTrue: boolean): Type {
                 switch (expr.kind) {
+                    case SyntaxKind.CallExpression:
+                        return narrowTypeByCallExpression(type, <CallExpression>expr, assumeTrue);
                     case SyntaxKind.ParenthesizedExpression:
                         return narrowType(type, (<ParenthesizedExpression>expr).expression, assumeTrue);
                     case SyntaxKind.BinaryExpression:
@@ -9028,8 +9129,19 @@ module ts {
             }
 
             checkSourceElement(node.body);
-            if (node.type && !isAccessor(node.kind) && !node.asteriskToken) {
-                checkIfNonVoidFunctionHasReturnExpressionsOrSingleThrowStatment(node, getTypeFromTypeNode(node.type));
+            if (node.type) {
+                if (!isAccessor(node.kind) && !node.asteriskToken) {
+                    checkIfNonVoidFunctionHasReturnExpressionsOrSingleThrowStatment(node, getTypeFromTypeNode(node.type));
+                }
+                let type = getTypeFromTypeNode(<TypeGuardTypeNode>node.type);
+                if (type.flags === TypeFlags.TypeGuard && ~(<TypeGuardType>type).parameterIndex) {
+                    checkTypeAssignableTo(
+                        (<TypeGuardType>type).type,
+                        getTypeAtLocation(node.parameters[(<TypeGuardType>type).parameterIndex]),
+                        (<TypeGuardTypeNode>node.type).type, 
+                        Diagnostics.Type_0_is_not_assignable_to_type_1
+                    );
+                }
             }
 
             // Report an implicit any error if there is no body, no explicit return type, and node is not a private method

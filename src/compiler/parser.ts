@@ -103,6 +103,9 @@ module ts {
             case SyntaxKind.TypeReference:
                 return visitNode(cbNode, (<TypeReferenceNode>node).typeName) ||
                     visitNodes(cbNodes, (<TypeReferenceNode>node).typeArguments);
+            case SyntaxKind.TypeGuardType:
+                return visitNode(cbNode, (<TypeGuardTypeNode>node).target) ||
+                    visitNode(cbNode, (<TypeGuardTypeNode>node).type);
             case SyntaxKind.TypeQuery:
                 return visitNode(cbNode, (<TypeQueryNode>node).exprName);
             case SyntaxKind.TypeLiteral:
@@ -650,7 +653,7 @@ module ts {
             return (contextFlags & ParserContextFlags.Decorator) !== 0;
         }
 
-        function parseErrorAtCurrentToken(message: DiagnosticMessage, arg0?: any): void {
+        function parseErrorAtCurrentToken(message: DiagnosticMessage, arg0?: any) {
             let start = scanner.getTokenPos();
             let length = scanner.getTextPos() - start;
 
@@ -1858,7 +1861,36 @@ module ts {
         function parseParameterInitializer() {
             return parseInitializer(/*inParameter*/ true);
         }
-
+        
+        function nextTokenIsIsKeyword(): boolean {
+            nextToken();
+            return token === SyntaxKind.IsKeyword;
+        }
+        
+        function parseTypeGuardType(parameterList?: NodeArray<ParameterDeclaration>): TypeGuardTypeNode {
+            let node = <TypeGuardTypeNode>createNode(SyntaxKind.TypeGuardType);
+            if (token === SyntaxKind.Identifier) {
+                node.target = createIdentifier(true);
+            }
+            else if (token === SyntaxKind.ThisKeyword) {
+                nextToken();
+            }
+            if (parseExpected(SyntaxKind.IsKeyword)) {
+                if (token === SyntaxKind.OpenBraceToken) {
+                    parseErrorAtCurrentToken(Diagnostics.Type_declaration_expected);
+                    return undefined;
+                }
+                else {
+                    node.type = parseType();
+                }
+            }
+            return finishNode(node);
+        }
+        
+        function isStartOfTypeGuardType(): boolean {
+            return (token === SyntaxKind.Identifier || token === SyntaxKind.ThisKeyword) && lookAhead(nextTokenIsIsKeyword);
+        }
+        
         function fillSignature(
             returnToken: SyntaxKind,
             yieldAndGeneratorParameterContext: boolean,
@@ -2313,6 +2345,9 @@ module ts {
         }
 
         function parseTypeWorker(): TypeNode {
+            if (isStartOfTypeGuardType()) {
+                return parseTypeGuardType();
+            }
             if (isStartOfFunctionType()) {
                 return parseFunctionOrConstructorType(SyntaxKind.FunctionType);
             }
