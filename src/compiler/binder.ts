@@ -128,6 +128,8 @@ module ts {
                 case SyntaxKind.FunctionDeclaration:
                 case SyntaxKind.ClassDeclaration:
                     return node.flags & NodeFlags.Default ? "default" : undefined;
+                case SyntaxKind.TypeGuardType:
+                    return "__typeguard";
             }
         }
 
@@ -428,6 +430,9 @@ module ts {
             switch (node.kind) {
                 case SyntaxKind.TypeParameter:
                     bindDeclaration(<Declaration>node, SymbolFlags.TypeParameter, SymbolFlags.TypeParameterExcludes, /*isBlockScopeContainer*/ false);
+                    break;
+                case SyntaxKind.TypeGuardType:
+                    bindDeclaration(<Declaration>node, (SymbolFlags.TypeGuardType | SymbolFlags.Value), SymbolFlags.TypeGuardTypeExcludes, /*isBlockScopeContainer*/ false);
                     break;
                 case SyntaxKind.Parameter:
                     bindParameter(<ParameterDeclaration>node);

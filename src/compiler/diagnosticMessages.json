@@ -1469,10 +1469,17 @@
         "category": "Error",
         "code": 2504
     },
+<<<<<<< HEAD
     "A generator cannot have a 'void' type annotation.": {
         "category": "Error",
         "code": 2505
     },
+=======
+    "Type-guard target must have a matching parameter.": {
+        "category": "Error",
+        "code": 2504
+    },
+>>>>>>> Adds custom type-guard function
 
     "Import declaration '{0}' is using private name '{1}'.": {
         "category": "Error",
