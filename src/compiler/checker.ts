@@ -9393,7 +9393,7 @@ module ts {
                     checkIfNonVoidFunctionHasReturnExpressionsOrSingleThrowStatment(node, getTypeFromTypeNode(node.type));
                 }
                 let type = getTypeFromTypeNode(<TypeGuardTypeNode>node.type);
-                if (type.flags === TypeFlags.TypeGuard && ~(<TypeGuardType>type).parameterIndex) {
+                if (type.flags & TypeFlags.TypeGuard && ~(<TypeGuardType>type).parameterIndex) {
                     checkTypeAssignableTo(
                         (<TypeGuardType>type).type,
                         getTypeAtLocation(node.parameters[(<TypeGuardType>type).parameterIndex]),
