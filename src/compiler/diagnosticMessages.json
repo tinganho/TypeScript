@@ -683,6 +683,14 @@
         "category": "Error",
         "code": 1218
     },
+    "Type declaration expected.": {
+        "category": "Error",
+        "code": 1219
+    },
+    "Can't define a type-guard type inside a type-guard type.": {
+        "category": "Error",
+        "code": 1220
+    },
 
     "Duplicate identifier '{0}'.": {
         "category": "Error",
@@ -1447,6 +1455,10 @@
     "Cannot find namespace '{0}'.": {
         "category": "Error",
         "code": 2503
+    },
+    "Type-guard target must have a matching parameter.": {
+        "category": "Error",
+        "code": 2504
     },
 
     "Import declaration '{0}' is using private name '{1}'.": {
