@@ -15,9 +15,12 @@ tests/cases/conformance/expressions/typeGuards/typeGuardFunction.ts(157,46): err
   Type 'x is Foo' is not assignable to type 'item is Baz'.
     Type 'Foo' is not assignable to type 'Baz'.
       Property 'baz' is missing in type 'Foo'.
+tests/cases/conformance/expressions/typeGuards/typeGuardFunction.ts(165,1): error TS2322: Type '(a: any, b: any) => boolean' is not assignable to type '(a: any, b: any) => a is A'.
+  Type 'boolean' is not assignable to type 'a is A'.
+tests/cases/conformance/expressions/typeGuards/typeGuardFunction.ts(170,1): error TS2322: Type '(a: any, b: any) => b is A' is not assignable to type '(a: any, b: any) => a is A'.
 
 
-==== tests/cases/conformance/expressions/typeGuards/typeGuardFunction.ts (13 errors) ====
+==== tests/cases/conformance/expressions/typeGuards/typeGuardFunction.ts (15 errors) ====
     
     class A {
         kind: number;
@@ -205,3 +208,23 @@ tests/cases/conformance/expressions/typeGuards/typeGuardFunction.ts(157,46): err
 !!! error TS2345:   Type 'x is Foo' is not assignable to type 'item is Baz'.
 !!! error TS2345:     Type 'Foo' is not assignable to type 'Baz'.
 !!! error TS2345:       Property 'baz' is missing in type 'Foo'.
+    
+    var test1: (a, b) => boolean;
+    test1 = function(a, b): a is A  {
+        return true;
+    };
+    
+    var test2: (a, b) => a is A;
+    test2 = function(a, b): boolean  {
+    ~~~~~
+!!! error TS2322: Type '(a: any, b: any) => boolean' is not assignable to type '(a: any, b: any) => a is A'.
+!!! error TS2322:   Type 'boolean' is not assignable to type 'a is A'.
+        return true;
+    };
+    
+    var test3: (a, b) => a is A;
+    test3 = function(a, b): b is A  {
+    ~~~~~
+!!! error TS2322: Type '(a: any, b: any) => b is A' is not assignable to type '(a: any, b: any) => a is A'.
+        return true;
+    };
