@@ -1,22 +1,23 @@
-tests/cases/conformance/expressions/typeGuards/typeGuardFunction.ts(101,12): error TS2322: Type 'string' is not assignable to type 'x is A'.
-tests/cases/conformance/expressions/typeGuards/typeGuardFunction.ts(104,55): error TS1220: Can't define a type-guard type inside a type-guard type.
-tests/cases/conformance/expressions/typeGuards/typeGuardFunction.ts(108,32): error TS2304: Cannot find name 'x'.
-tests/cases/conformance/expressions/typeGuards/typeGuardFunction.ts(112,48): error TS1219: Type declaration expected.
-tests/cases/conformance/expressions/typeGuards/typeGuardFunction.ts(116,38): error TS2504: Type-guard target must have a matching parameter.
-tests/cases/conformance/expressions/typeGuards/typeGuardFunction.ts(120,51): error TS2322: Type 'B' is not assignable to type 'A'.
+tests/cases/conformance/expressions/typeGuards/typeGuardFunction.ts(103,12): error TS2322: Type 'string' is not assignable to type 'x is A'.
+tests/cases/conformance/expressions/typeGuards/typeGuardFunction.ts(106,55): error TS1220: Can't define a type-guard type inside a type-guard type.
+tests/cases/conformance/expressions/typeGuards/typeGuardFunction.ts(110,32): error TS2304: Cannot find name 'x'.
+tests/cases/conformance/expressions/typeGuards/typeGuardFunction.ts(114,48): error TS1219: Type declaration expected.
+tests/cases/conformance/expressions/typeGuards/typeGuardFunction.ts(118,38): error TS2504: Type-guard target must have a matching parameter.
+tests/cases/conformance/expressions/typeGuards/typeGuardFunction.ts(122,51): error TS2322: Type 'B' is not assignable to type 'A'.
   Property 'kind' is missing in type 'B'.
-tests/cases/conformance/expressions/typeGuards/typeGuardFunction.ts(124,56): error TS2322: Type 'number' is not assignable to type 'string'.
-tests/cases/conformance/expressions/typeGuards/typeGuardFunction.ts(128,56): error TS2322: Type 'T[]' is not assignable to type 'string'.
-tests/cases/conformance/expressions/typeGuards/typeGuardFunction.ts(133,7): error TS2339: Property 'baz' does not exist on type 'A'.
-tests/cases/conformance/expressions/typeGuards/typeGuardFunction.ts(138,7): error TS2339: Property 'foo' does not exist on type 'A'.
-tests/cases/conformance/expressions/typeGuards/typeGuardFunction.ts(145,7): error TS2339: Property 'foo' does not exist on type 'A'.
-tests/cases/conformance/expressions/typeGuards/typeGuardFunction.ts(152,46): error TS2345: Argument of type '(x: A) => x is Foo' is not assignable to parameter of type '(item: any) => item is Baz'.
+tests/cases/conformance/expressions/typeGuards/typeGuardFunction.ts(126,56): error TS2322: Type 'number' is not assignable to type 'string'.
+tests/cases/conformance/expressions/typeGuards/typeGuardFunction.ts(130,56): error TS2322: Type 'T[]' is not assignable to type 'string'.
+tests/cases/conformance/expressions/typeGuards/typeGuardFunction.ts(135,7): error TS2339: Property 'baz' does not exist on type 'A'.
+tests/cases/conformance/expressions/typeGuards/typeGuardFunction.ts(139,5): error TS2322: Type 'Foo' is not assignable to type 'string'.
+tests/cases/conformance/expressions/typeGuards/typeGuardFunction.ts(143,7): error TS2339: Property 'foo' does not exist on type 'A'.
+tests/cases/conformance/expressions/typeGuards/typeGuardFunction.ts(150,7): error TS2339: Property 'foo' does not exist on type 'A'.
+tests/cases/conformance/expressions/typeGuards/typeGuardFunction.ts(157,46): error TS2345: Argument of type '(x: A) => x is Foo' is not assignable to parameter of type '(item: any) => item is Baz'.
   Type 'x is Foo' is not assignable to type 'item is Baz'.
     Type 'Foo' is not assignable to type 'Baz'.
       Property 'baz' is missing in type 'Foo'.
 
 
-==== tests/cases/conformance/expressions/typeGuards/typeGuardFunction.ts (12 errors) ====
+==== tests/cases/conformance/expressions/typeGuards/typeGuardFunction.ts (13 errors) ====
     
     class A {
         kind: number;
@@ -59,6 +60,8 @@ tests/cases/conformance/expressions/typeGuards/typeGuardFunction.ts(152,46): err
     function isArrayOf_2<T>(of: (item) => item is T, a: any[]): a is T[] {
         return true;
     }
+    
+    declare function getObjectOfType<T>(of: (item: any) => item is T, obj: any[]): T;
     
     function foo(): Foo {
         return <Foo>a;
@@ -170,6 +173,11 @@ tests/cases/conformance/expressions/typeGuards/typeGuardFunction.ts(152,46): err
           ~~~
 !!! error TS2339: Property 'baz' does not exist on type 'A'.
     }
+    
+    // Error: Type Foo is not assignable to string
+    var f: string = getObjectOfType(isFoo, [1, 2]); 
+        ~
+!!! error TS2322: Type 'Foo' is not assignable to type 'string'.
     
     // The parameter index and argument index for the type guard target is not matching.
     if (hasMultipleParameters(0, a)) {

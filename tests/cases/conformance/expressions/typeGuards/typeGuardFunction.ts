@@ -135,8 +135,8 @@ if (isBaz(b)) {
     a.baz(); // Error
 }
 
-// Error:  Type Foo is not assignable to string
-var f: string = getObjectOfType(isFoo, [1, 2]);
+// Error: Type Foo is not assignable to string
+var f: string = getObjectOfType(isFoo, [1, 2]); 
 
 // The parameter index and argument index for the type guard target is not matching.
 if (hasMultipleParameters(0, a)) {
