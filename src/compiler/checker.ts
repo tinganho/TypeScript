@@ -4223,28 +4223,23 @@ module ts {
                     if (source === nullType && target !== undefinedType) return Ternary.True;
                     if (source.flags & TypeFlags.Enum && target === numberType) return Ternary.True;
                     if (source.flags & TypeFlags.StringLiteral && target === stringType) return Ternary.True;
+                    if (source.flags & TypeFlags.TypeGuard && target.flags & TypeFlags.Boolean) return Ternary.True;
                     if (relation === assignableRelation) {
                         if (source.flags & TypeFlags.Any) return Ternary.True;
                         if (source === numberType && target.flags & TypeFlags.Enum) return Ternary.True;
                     }
-                    
-                    // Boolean is assignable to TypeGuard and vice versa.
-                    //
-                    //   Example:
-                    //   
-                    //     function a(x: any): x is A {
-                    //        return true; // Boolean type is assignable to a type-guard type.
-                    //     }
-                    //
-                    //     function b(a: boolean) {
-                    //     }
-                    //     b(a()); // Type-guard type is assignable to a boolean.
-                    //
-                    if (source.flags & TypeFlags.Boolean && target.flags & TypeFlags.TypeGuard) return Ternary.True;
-                    if (source.flags & TypeFlags.TypeGuard && target.flags & TypeFlags.Boolean) return Ternary.True;
                 }
                 let saveErrorInfo = errorInfo;
                 if (source.flags & TypeFlags.TypeGuard && target.flags & TypeFlags.TypeGuard) {
+                    if ((<TypeGuardType>source).parameterIndex &&
+                        (<TypeGuardType>target).parameterIndex &&
+                        (<TypeGuardType>source).parameterIndex !== (<TypeGuardType>target).parameterIndex) {
+                            return Ternary.False;
+                    }
+                    if ((<TypeGuardType>source).parameterIndex && !(<TypeGuardType>target).parameterIndex ||
+                        !(<TypeGuardType>source).parameterIndex && (<TypeGuardType>target).parameterIndex) {
+                            return Ternary.False;
+                    }
                     if (result = isRelatedTo((<TypeGuardType>source).type, (<TypeGuardType>target).type, reportErrors, headMessage)) {
                         return result;
                     }
@@ -10165,6 +10160,9 @@ module ts {
                         return;
                     }
 
+                    if (returnType.flags & TypeFlags.TypeGuard && exprType === booleanType) {
+                        return;
+                    }
                     if (func.kind === SyntaxKind.SetAccessor) {
                         error(node.expression, Diagnostics.Setters_cannot_return_a_value);
                     }

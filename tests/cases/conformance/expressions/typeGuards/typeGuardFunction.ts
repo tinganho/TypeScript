@@ -155,3 +155,18 @@ if (hasNoTypeGuard(a)) {
 function acceptingDifferentSignatureTypeGuardFunction(a: (item) => item is Baz) {
 }
 acceptingDifferentSignatureTypeGuardFunction(isFoo);
+
+var test1: (a, b) => boolean;
+test1 = function(a, b): a is A  {
+    return true;
+};
+
+var test2: (a, b) => a is A;
+test2 = function(a, b): boolean  {
+    return true;
+};
+
+var test3: (a, b) => a is A;
+test3 = function(a, b): b is A  {
+    return true;
+};

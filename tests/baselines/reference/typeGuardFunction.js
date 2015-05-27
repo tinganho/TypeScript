@@ -157,6 +157,21 @@ function acceptingDifferentSignatureTypeGuardFunction(a: (item) => item is Baz) 
 }
 acceptingDifferentSignatureTypeGuardFunction(isFoo);
 
+var test1: (a, b) => boolean;
+test1 = function(a, b): a is A  {
+    return true;
+};
+
+var test2: (a, b) => a is A;
+test2 = function(a, b): boolean  {
+    return true;
+};
+
+var test3: (a, b) => a is A;
+test3 = function(a, b): b is A  {
+    return true;
+};
+
 //// [typeGuardFunction.js]
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -303,3 +318,15 @@ if (hasNoTypeGuard(a)) {
 function acceptingDifferentSignatureTypeGuardFunction(a) {
 }
 acceptingDifferentSignatureTypeGuardFunction(isFoo);
+var test1;
+test1 = function (a, b) {
+    return true;
+};
+var test2;
+test2 = function (a, b) {
+    return true;
+};
+var test3;
+test3 = function (a, b) {
+    return true;
+};
