@@ -3838,9 +3838,8 @@ module ts {
                 }
             }
             else {
-                type.type = anyType;
+                type.type = unknownType;
             }
-            type.symbol = node.symbol;
             return type;
         }
 
