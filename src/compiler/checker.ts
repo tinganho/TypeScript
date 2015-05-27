@@ -3703,10 +3703,10 @@ module ts {
             let hasParameters = false;
             type.parameterIndex = -1;
             if (node.target) {
-                let functionDeclaration = <SignatureDeclaration>node.target.parent.parent;
-                if (functionDeclaration.parameters) {
-                    for (let i = 0; i < functionDeclaration.parameters.length; i++) {
-                        let param = functionDeclaration.parameters[i];
+                let signature = <SignatureDeclaration>node.target.parent.parent;
+                if (signature.parameters) {
+                    for (let i = 0; i < signature.parameters.length; i++) {
+                        let param = signature.parameters[i];
                         if (param.name.kind === SyntaxKind.Identifier && (<Identifier>param.name).text === node.target.text) {
                             type.parameterIndex = i;
                             break;
