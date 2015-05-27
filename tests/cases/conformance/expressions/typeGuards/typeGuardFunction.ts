@@ -41,6 +41,8 @@ function isArrayOf_2<T>(of: (item) => item is T, a: any[]): a is T[] {
     return true;
 }
 
+declare function getObjectOfType<T>(of: (item: any) => item is T, obj: any[]): T;
+
 function foo(): Foo {
     return <Foo>a;
 }
@@ -132,6 +134,9 @@ function hasNonMathcingGenericType<T>(a: string): a is T[] {
 if (isBaz(b)) {
     a.baz(); // Error
 }
+
+// Error:  Type Foo is not assignable to string
+var f: string = getObjectOfType(isFoo, [1, 2]);
 
 // The parameter index and argument index for the type guard target is not matching.
 if (hasMultipleParameters(0, a)) {
