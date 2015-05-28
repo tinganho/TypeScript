@@ -12,6 +12,10 @@ class Foo extends A {
     }
 }
 
+class DerivedFoo extends Foo {
+    name: string;
+}
+
 class Bar extends A {
     bar() {
     }
@@ -20,6 +24,10 @@ class Bar extends A {
 class Baz extends B {
     baz() {
     }
+}
+
+function isA(x: any): x is A {
+    return true;
 }
 
 function isFoo(x: A): x is Foo {
@@ -54,6 +62,7 @@ var b: B;
 if (isFoo(a)) {
     a.foo();
 }
+
 if(isFoo(a)) {
     a.foo();
 }
@@ -95,6 +104,17 @@ acceptingBoolean(isFoo(a));
 function acceptingTypeGuardFunction(a: (item) => item is Foo) {
 }
 acceptingTypeGuardFunction(isFoo);
+
+// Foo extends A and Baz extends B
+var union: Foo | Baz;
+if(isA(union)) {
+    union.kind;
+}
+
+var subType: DerivedFoo;
+if(isFoo(subType)) {
+    subType.name;
+}
 
 /**
  * Errors
@@ -198,6 +218,13 @@ var Foo = (function (_super) {
     };
     return Foo;
 })(A);
+var DerivedFoo = (function (_super) {
+    __extends(DerivedFoo, _super);
+    function DerivedFoo() {
+        _super.apply(this, arguments);
+    }
+    return DerivedFoo;
+})(Foo);
 var Bar = (function (_super) {
     __extends(Bar, _super);
     function Bar() {
@@ -216,6 +243,9 @@ var Baz = (function (_super) {
     };
     return Baz;
 })(B);
+function isA(x) {
+    return true;
+}
 function isFoo(x) {
     return true;
 }
@@ -272,6 +302,15 @@ acceptingBoolean(isFoo(a));
 function acceptingTypeGuardFunction(a) {
 }
 acceptingTypeGuardFunction(isFoo);
+// Foo extends A and Baz extends B
+var union;
+if (isA(union)) {
+    union.kind;
+}
+var subType;
+if (isFoo(subType)) {
+    subType.name;
+}
 /**
  * Errors
  */

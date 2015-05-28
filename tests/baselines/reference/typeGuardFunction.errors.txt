@@ -1,23 +1,23 @@
-tests/cases/conformance/expressions/typeGuards/typeGuardFunction.ts(103,12): error TS2322: Type 'string' is not assignable to type 'x is A'.
-tests/cases/conformance/expressions/typeGuards/typeGuardFunction.ts(106,55): error TS1220: Can't define a type-guard type inside a type-guard type.
-tests/cases/conformance/expressions/typeGuards/typeGuardFunction.ts(110,32): error TS2304: Cannot find name 'x'.
-tests/cases/conformance/expressions/typeGuards/typeGuardFunction.ts(114,48): error TS1219: Type declaration expected.
-tests/cases/conformance/expressions/typeGuards/typeGuardFunction.ts(118,38): error TS2504: Type-guard target must have a matching parameter.
-tests/cases/conformance/expressions/typeGuards/typeGuardFunction.ts(122,51): error TS2322: Type 'B' is not assignable to type 'A'.
+tests/cases/conformance/expressions/typeGuards/typeGuardFunction.ts(123,12): error TS2322: Type 'string' is not assignable to type 'x is A'.
+tests/cases/conformance/expressions/typeGuards/typeGuardFunction.ts(126,55): error TS1220: Can't define a type-guard type inside a type-guard type.
+tests/cases/conformance/expressions/typeGuards/typeGuardFunction.ts(130,32): error TS2304: Cannot find name 'x'.
+tests/cases/conformance/expressions/typeGuards/typeGuardFunction.ts(134,48): error TS1219: Type declaration expected.
+tests/cases/conformance/expressions/typeGuards/typeGuardFunction.ts(138,38): error TS2504: Type-guard target must have a matching parameter.
+tests/cases/conformance/expressions/typeGuards/typeGuardFunction.ts(142,51): error TS2322: Type 'B' is not assignable to type 'A'.
   Property 'kind' is missing in type 'B'.
-tests/cases/conformance/expressions/typeGuards/typeGuardFunction.ts(126,56): error TS2322: Type 'number' is not assignable to type 'string'.
-tests/cases/conformance/expressions/typeGuards/typeGuardFunction.ts(130,56): error TS2322: Type 'T[]' is not assignable to type 'string'.
-tests/cases/conformance/expressions/typeGuards/typeGuardFunction.ts(135,7): error TS2339: Property 'baz' does not exist on type 'A'.
-tests/cases/conformance/expressions/typeGuards/typeGuardFunction.ts(139,5): error TS2322: Type 'Foo' is not assignable to type 'string'.
-tests/cases/conformance/expressions/typeGuards/typeGuardFunction.ts(143,7): error TS2339: Property 'foo' does not exist on type 'A'.
-tests/cases/conformance/expressions/typeGuards/typeGuardFunction.ts(150,7): error TS2339: Property 'foo' does not exist on type 'A'.
-tests/cases/conformance/expressions/typeGuards/typeGuardFunction.ts(157,46): error TS2345: Argument of type '(x: A) => x is Foo' is not assignable to parameter of type '(item: any) => item is Baz'.
+tests/cases/conformance/expressions/typeGuards/typeGuardFunction.ts(146,56): error TS2322: Type 'number' is not assignable to type 'string'.
+tests/cases/conformance/expressions/typeGuards/typeGuardFunction.ts(150,56): error TS2322: Type 'T[]' is not assignable to type 'string'.
+tests/cases/conformance/expressions/typeGuards/typeGuardFunction.ts(155,7): error TS2339: Property 'baz' does not exist on type 'A'.
+tests/cases/conformance/expressions/typeGuards/typeGuardFunction.ts(159,5): error TS2322: Type 'Foo' is not assignable to type 'string'.
+tests/cases/conformance/expressions/typeGuards/typeGuardFunction.ts(163,7): error TS2339: Property 'foo' does not exist on type 'A'.
+tests/cases/conformance/expressions/typeGuards/typeGuardFunction.ts(170,7): error TS2339: Property 'foo' does not exist on type 'A'.
+tests/cases/conformance/expressions/typeGuards/typeGuardFunction.ts(177,46): error TS2345: Argument of type '(x: A) => x is Foo' is not assignable to parameter of type '(item: any) => item is Baz'.
   Type 'x is Foo' is not assignable to type 'item is Baz'.
     Type 'Foo' is not assignable to type 'Baz'.
       Property 'baz' is missing in type 'Foo'.
-tests/cases/conformance/expressions/typeGuards/typeGuardFunction.ts(165,1): error TS2322: Type '(a: any, b: any) => boolean' is not assignable to type '(a: any, b: any) => a is A'.
+tests/cases/conformance/expressions/typeGuards/typeGuardFunction.ts(185,1): error TS2322: Type '(a: any, b: any) => boolean' is not assignable to type '(a: any, b: any) => a is A'.
   Type 'boolean' is not assignable to type 'a is A'.
-tests/cases/conformance/expressions/typeGuards/typeGuardFunction.ts(170,1): error TS2322: Type '(a: any, b: any) => b is A' is not assignable to type '(a: any, b: any) => a is A'.
+tests/cases/conformance/expressions/typeGuards/typeGuardFunction.ts(190,1): error TS2322: Type '(a: any, b: any) => b is A' is not assignable to type '(a: any, b: any) => a is A'.
 
 
 ==== tests/cases/conformance/expressions/typeGuards/typeGuardFunction.ts (15 errors) ====
@@ -34,6 +34,10 @@ tests/cases/conformance/expressions/typeGuards/typeGuardFunction.ts(170,1): erro
         }
     }
     
+    class DerivedFoo extends Foo {
+        name: string;
+    }
+    
     class Bar extends A {
         bar() {
         }
@@ -42,6 +46,10 @@ tests/cases/conformance/expressions/typeGuards/typeGuardFunction.ts(170,1): erro
     class Baz extends B {
         baz() {
         }
+    }
+    
+    function isA(x: any): x is A {
+        return true;
     }
     
     function isFoo(x: A): x is Foo {
@@ -76,6 +84,7 @@ tests/cases/conformance/expressions/typeGuards/typeGuardFunction.ts(170,1): erro
     if (isFoo(a)) {
         a.foo();
     }
+    
     if(isFoo(a)) {
         a.foo();
     }
@@ -117,6 +126,17 @@ tests/cases/conformance/expressions/typeGuards/typeGuardFunction.ts(170,1): erro
     function acceptingTypeGuardFunction(a: (item) => item is Foo) {
     }
     acceptingTypeGuardFunction(isFoo);
+    
+    // Foo extends A and Baz extends B
+    var union: Foo | Baz;
+    if(isA(union)) {
+        union.kind;
+    }
+    
+    var subType: DerivedFoo;
+    if(isFoo(subType)) {
+        subType.name;
+    }
     
     /**
      * Errors
