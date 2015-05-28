@@ -3814,22 +3814,22 @@ module ts {
             let type = <TypeGuardType>createType(TypeFlags.TypeGuard);
             let hasParameters = false;
             type.parameterIndex = -1;
-            if (node.target) {
-                let signature = <SignatureDeclaration>node.target.parent.parent;
+            if (node.parameterName) {
+                let signature = <SignatureDeclaration>node.parameterName.parent.parent;
                 if (signature.parameters) {
                     for (let i = 0; i < signature.parameters.length; i++) {
                         let param = signature.parameters[i];
-                        if (param.name.kind === SyntaxKind.Identifier && (<Identifier>param.name).text === node.target.text) {
+                        if (param.name.kind === SyntaxKind.Identifier && (<Identifier>param.name).text === node.parameterName.text) {
                             type.parameterIndex = i;
                             break;
                         }
                     }
                     hasParameters = true;
                 }
-                type.parameterName = node.target.text;
+                type.parameterName = node.parameterName.text;
             }
             if (hasParameters && type.parameterIndex === -1) {
-                error(node.target, Diagnostics.Type_guard_target_must_have_a_matching_parameter);
+                error(node.parameterName, Diagnostics.Type_guard_target_must_have_a_matching_parameter);
             }
             if (node.type) {
                 type.type = getTypeFromTypeNode(node.type);
