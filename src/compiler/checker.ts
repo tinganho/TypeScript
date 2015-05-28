@@ -3943,10 +3943,6 @@ module ts {
 
         function instantiateType(type: Type, mapper: TypeMapper): Type {
             if (mapper !== identityMapper) {
-                if (type.flags & TypeFlags.TypeGuard) {
-                    (<TypeGuardType>type).type = instantiateType((<TypeGuardType>type).type, mapper);
-                    return type;
-                } 
                 if (type.flags & TypeFlags.TypeParameter) {
                     return mapper(<TypeParameter>type);
                 }
@@ -3962,6 +3958,10 @@ module ts {
                 }
                 if (type.flags & TypeFlags.Union) {
                     return getUnionType(instantiateList((<UnionType>type).types, mapper, instantiateType), /*noSubtypeReduction*/ true);
+                }
+                if (type.flags & TypeFlags.TypeGuard) {
+                    (<TypeGuardType>type).type = instantiateType((<TypeGuardType>type).type, mapper);
+                    return type;
                 }
             }
             return type;
