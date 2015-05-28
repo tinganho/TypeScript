@@ -5647,8 +5647,11 @@ module ts {
                     if (expr.arguments && expr.arguments[(<TypeGuardType>callType).parameterIndex]) {
                         if (getSymbolAtLocation(expr.arguments[(<TypeGuardType>callType).parameterIndex]) === symbol) {
                             let narrowedType = (<TypeGuardType>callType).type;
-                            if (isTypeAssignableTo(narrowedType, type)) {
-                               return narrowedType;
+                            if (isTypeSubtypeOf(narrowedType, type)) {
+                                return narrowedType;
+                            }
+                            if (type.flags & TypeFlags.Union) {
+                                return getUnionType(filter((<UnionType>type).types, t => isTypeSubtypeOf(t, narrowedType)));
                             }
                         }
                     }
