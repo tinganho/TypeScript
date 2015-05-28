@@ -104,7 +104,7 @@ module ts {
                 return visitNode(cbNode, (<TypeReferenceNode>node).typeName) ||
                     visitNodes(cbNodes, (<TypeReferenceNode>node).typeArguments);
             case SyntaxKind.TypeGuardType:
-                return visitNode(cbNode, (<TypeGuardTypeNode>node).target) ||
+                return visitNode(cbNode, (<TypeGuardTypeNode>node).parameterName) ||
                     visitNode(cbNode, (<TypeGuardTypeNode>node).type);
             case SyntaxKind.TypeQuery:
                 return visitNode(cbNode, (<TypeQueryNode>node).exprName);
@@ -1870,7 +1870,7 @@ module ts {
         function parseTypeGuardType(parameterList?: NodeArray<ParameterDeclaration>): TypeGuardTypeNode {
             let node = <TypeGuardTypeNode>createNode(SyntaxKind.TypeGuardType);
             if (token === SyntaxKind.Identifier) {
-                node.target = createIdentifier(true);
+                node.parameterName = createIdentifier(true);
             }
             else if (token === SyntaxKind.ThisKeyword) {
                 nextToken();

@@ -576,7 +576,7 @@ module ts {
     }
     
     export interface TypeGuardTypeNode extends TypeNode {
-        target?: Identifier;
+        parameterName?: Identifier;
         type: TypeNode;
     }
 
