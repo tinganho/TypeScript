@@ -170,7 +170,7 @@ module ts {
         ConstructSignature,
         IndexSignature,
         // Type
-        TypeGuardType,
+        TypePredicate,
         TypeReference,
         FunctionType,
         ConstructorType,
@@ -464,6 +464,7 @@ module ts {
         typeParameters?: NodeArray<TypeParameterDeclaration>;
         parameters: NodeArray<ParameterDeclaration>;
         type?: TypeNode;
+        typePredicate?: TypePredicateNode;
     }
 
     // SyntaxKind.VariableDeclaration
@@ -608,7 +609,7 @@ module ts {
         typeArguments?: NodeArray<TypeNode>;
     }
     
-    export interface TypeGuardTypeNode extends TypeNode {
+    export interface TypePredicateNode extends TypeNode {
         parameterName?: Identifier;
         type: TypeNode;
     }
@@ -1383,6 +1384,12 @@ module ts {
         NotAccessible,
         CannotBeNamed
     }
+    
+    export interface TypePredicate {
+        parameterName: string;
+        parameterIndex?: number; // Call expression argument
+        type: Type;
+    }
 
     /* @internal */
     export type AnyImportSyntax = ImportDeclaration | ImportEqualsDeclaration;
@@ -1570,6 +1577,7 @@ module ts {
         assignmentChecks?: Map<boolean>;  // Cache of assignment checks
         hasReportedStatementInAmbientContext?: boolean;  // Cache boolean if we report statements in ambient context
         importOnRightSide?: Symbol;       // for import declarations - import that appear on the right side
+        typePredicateParameterIndex?: number; // Index of type predicate parameter
     }
 
     export const enum TypeFlags {
@@ -1588,16 +1596,15 @@ module ts {
         Reference               = 0x00001000,  // Generic type reference
         Tuple                   = 0x00002000,  // Tuple
         Union                   = 0x00004000,  // Union
-        TypeGuard               = 0x00008000,  // Type-guard
-        Anonymous               = 0x00010000,  // Anonymous
+        Anonymous               = 0x00008000,  // Anonymous
         /* @internal */ 
-        FromSignature           = 0x00020000,  // Created for signature assignment check
-        ObjectLiteral           = 0x00040000,  // Originates in an object literal
+        FromSignature           = 0x00010000,  // Created for signature assignment check
+        ObjectLiteral           = 0x00020000,  // Originates in an object literal
         /* @internal */ 
-        ContainsUndefinedOrNull = 0x00080000,  // Type is or contains Undefined or Null type
+        ContainsUndefinedOrNull = 0x00040000,  // Type is or contains Undefined or Null type
         /* @internal */ 
-        ContainsObjectLiteral   = 0x00100000,  // Type is or contains object literal type
-        ESSymbol                = 0x00200000,  // Type of symbol primitive introduced in ES6
+        ContainsObjectLiteral   = 0x00080000,  // Type is or contains object literal type
+        ESSymbol                = 0x00100000,  // Type of symbol primitive introduced in ES6
 
         /* @internal */ 
         Intrinsic = Any | String | Number | Boolean | ESSymbol | Void | Undefined | Null,
@@ -1626,12 +1633,6 @@ module ts {
     // String literal types (TypeFlags.StringLiteral)
     export interface StringLiteralType extends Type {
         text: string;  // Text of string literal
-    }
-    
-    export interface TypeGuardType extends Type {
-        parameterName: string;
-        parameterIndex?: number; // Call expression argument
-        type: Type;
     }
 
     // Object types (TypeFlags.ObjectType)
@@ -1735,6 +1736,7 @@ module ts {
         erasedSignatureCache?: Signature;   // Erased version of signature (deferred)
         /* @internal */
         isolatedSignatureType?: ObjectType; // A manufactured type that just contains the signature for purposes of signature comparison
+        typePredicate?: TypePredicate;
     }
 
     export const enum IndexKind {
