@@ -81,7 +81,8 @@ module ts {
                     visitNodes(cbNodes, node.modifiers) ||
                     visitNodes(cbNodes, (<SignatureDeclaration>node).typeParameters) ||
                     visitNodes(cbNodes, (<SignatureDeclaration>node).parameters) ||
-                    visitNode(cbNode, (<SignatureDeclaration>node).type);
+                    visitNode(cbNode, (<SignatureDeclaration>node).type) ||
+                    visitNode(cbNode, (<SignatureDeclaration>node).typePredicate);
             case SyntaxKind.MethodDeclaration:
             case SyntaxKind.MethodSignature:
             case SyntaxKind.Constructor:
@@ -98,14 +99,15 @@ module ts {
                     visitNodes(cbNodes, (<FunctionLikeDeclaration>node).typeParameters) ||
                     visitNodes(cbNodes, (<FunctionLikeDeclaration>node).parameters) ||
                     visitNode(cbNode, (<FunctionLikeDeclaration>node).type) ||
+                    visitNode(cbNode, (<FunctionLikeDeclaration>node).typePredicate) ||
                     visitNode(cbNode, (<ArrowFunction>node).equalsGreaterThanToken) ||
                     visitNode(cbNode, (<FunctionLikeDeclaration>node).body);
             case SyntaxKind.TypeReference:
                 return visitNode(cbNode, (<TypeReferenceNode>node).typeName) ||
                     visitNodes(cbNodes, (<TypeReferenceNode>node).typeArguments);
-            case SyntaxKind.TypeGuardType:
-                return visitNode(cbNode, (<TypeGuardTypeNode>node).parameterName) ||
-                    visitNode(cbNode, (<TypeGuardTypeNode>node).type);
+            case SyntaxKind.TypePredicate:
+                return visitNode(cbNode, (<TypePredicateNode>node).parameterName) ||
+                    visitNode(cbNode, (<TypePredicateNode>node).type);
             case SyntaxKind.TypeQuery:
                 return visitNode(cbNode, (<TypeQueryNode>node).exprName);
             case SyntaxKind.TypeLiteral:
@@ -1867,30 +1869,6 @@ module ts {
             return token === SyntaxKind.IsKeyword;
         }
         
-        function parseTypeGuardType(parameterList?: NodeArray<ParameterDeclaration>): TypeGuardTypeNode {
-            let node = <TypeGuardTypeNode>createNode(SyntaxKind.TypeGuardType);
-            if (token === SyntaxKind.Identifier) {
-                node.parameterName = createIdentifier(true);
-            }
-            else if (token === SyntaxKind.ThisKeyword) {
-                nextToken();
-            }
-            if (parseExpected(SyntaxKind.IsKeyword)) {
-                if (token === SyntaxKind.OpenBraceToken) {
-                    parseErrorAtCurrentToken(Diagnostics.Type_declaration_expected);
-                    return undefined;
-                }
-                else {
-                    node.type = parseType();
-                }
-            }
-            return finishNode(node);
-        }
-        
-        function isStartOfTypeGuardType(): boolean {
-            return (token === SyntaxKind.Identifier || token === SyntaxKind.ThisKeyword) && lookAhead(nextTokenIsIsKeyword);
-        }
-        
         function fillSignature(
             returnToken: SyntaxKind,
             yieldAndGeneratorParameterContext: boolean,
@@ -1906,6 +1884,19 @@ module ts {
             }
             else if (parseOptional(returnToken)) {
                 signature.type = parseType();
+            }
+            console.log((<any>ts).SyntaxKind[token])
+            if (token === SyntaxKind.IsKeyword) {
+                let node = <TypePredicateNode>createNode(SyntaxKind.TypePredicate);
+                node.pos = signature.type.pos;
+                node.parameterName = <Identifier>(<TypeReferenceNode>signature.type).typeName;
+                
+                // Swallow IsKeyword
+                nextToken();
+                
+                node.type = parseType();
+                signature.type = undefined;
+                signature.typePredicate = finishNode(node);
             }
         }
 
@@ -2345,9 +2336,6 @@ module ts {
         }
 
         function parseTypeWorker(): TypeNode {
-            if (isStartOfTypeGuardType()) {
-                return parseTypeGuardType();
-            }
             if (isStartOfFunctionType()) {
                 return parseFunctionOrConstructorType(SyntaxKind.FunctionType);
             }
