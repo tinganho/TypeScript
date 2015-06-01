@@ -1,4 +1,4 @@
-tests/cases/conformance/expressions/typeGuards/typeGuardFunctionErrors.ts(15,12): error TS1221: A type-guard function can only return a boolean.
+tests/cases/conformance/expressions/typeGuards/typeGuardFunctionErrors.ts(15,12): error TS1224: A type-guard function can only return a boolean.
 tests/cases/conformance/expressions/typeGuards/typeGuardFunctionErrors.ts(18,55): error TS2304: Cannot find name 'x'.
 tests/cases/conformance/expressions/typeGuards/typeGuardFunctionErrors.ts(18,57): error TS1144: '{' or ';' expected.
 tests/cases/conformance/expressions/typeGuards/typeGuardFunctionErrors.ts(18,57): error TS2304: Cannot find name 'is'.
@@ -8,7 +8,7 @@ tests/cases/conformance/expressions/typeGuards/typeGuardFunctionErrors.ts(22,33)
 tests/cases/conformance/expressions/typeGuards/typeGuardFunctionErrors.ts(26,10): error TS2391: Function implementation is missing or not immediately following the declaration.
 tests/cases/conformance/expressions/typeGuards/typeGuardFunctionErrors.ts(27,5): error TS1131: Property or signature expected.
 tests/cases/conformance/expressions/typeGuards/typeGuardFunctionErrors.ts(28,1): error TS1128: Declaration or statement expected.
-tests/cases/conformance/expressions/typeGuards/typeGuardFunctionErrors.ts(30,38): error TS1222: Cannot find parameter 'x'.
+tests/cases/conformance/expressions/typeGuards/typeGuardFunctionErrors.ts(30,38): error TS1225: Cannot find parameter 'x'.
 tests/cases/conformance/expressions/typeGuards/typeGuardFunctionErrors.ts(34,51): error TS2322: Type 'B' is not assignable to type 'A'.
   Property 'propA' is missing in type 'B'.
 tests/cases/conformance/expressions/typeGuards/typeGuardFunctionErrors.ts(38,56): error TS2322: Type 'number' is not assignable to type 'string'.
@@ -25,7 +25,7 @@ tests/cases/conformance/expressions/typeGuards/typeGuardFunctionErrors.ts(81,1):
   Type-guard annotation 'p2 is A' is not assignable to 'p1 is A'.
     Parameter index from 'p2' does not match the parameter index from 'p1'.
 tests/cases/conformance/expressions/typeGuards/typeGuardFunctionErrors.ts(87,1): error TS2322: Type '(p1: any, p2: any, p3: any) => boolean' is not assignable to type '(p1: any, p2: any) => boolean'.
-tests/cases/conformance/expressions/typeGuards/typeGuardFunctionErrors.ts(92,56): error TS1222: Cannot find parameter 'p1'.
+tests/cases/conformance/expressions/typeGuards/typeGuardFunctionErrors.ts(92,56): error TS1225: Cannot find parameter 'p1'.
 
 
 ==== tests/cases/conformance/expressions/typeGuards/typeGuardFunctionErrors.ts (22 errors) ====
@@ -45,7 +45,7 @@ tests/cases/conformance/expressions/typeGuards/typeGuardFunctionErrors.ts(92,56)
     function hasANonBooleanReturnStatement(x): x is A {
         return '';
                ~~
-!!! error TS1221: A type-guard function can only return a boolean.
+!!! error TS1224: A type-guard function can only return a boolean.
     }
     
     function hasTypeGuardTypeInsideTypeGuardType(x): x is x is A {
@@ -80,7 +80,7 @@ tests/cases/conformance/expressions/typeGuards/typeGuardFunctionErrors.ts(92,56)
     
     function hasNonMatchingParameter(y): x is A {
                                          ~
-!!! error TS1222: Cannot find parameter 'x'.
+!!! error TS1225: Cannot find parameter 'x'.
         return true;
     }
     
@@ -170,5 +170,5 @@ tests/cases/conformance/expressions/typeGuards/typeGuardFunctionErrors.ts(92,56)
     // Type guard paramater referring to a binding pattern
     declare function destructureParameter({ p1, p2, p3 }): p1 is A;
                                                            ~~
-!!! error TS1222: Cannot find parameter 'p1'.
+!!! error TS1225: Cannot find parameter 'p1'.
     

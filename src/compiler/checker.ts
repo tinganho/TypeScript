@@ -10159,9 +10159,6 @@ module ts {
             if (node.expression) {
                 let func = getContainingFunction(node);
                 if (func) {
-                    let signature = getSignatureFromDeclaration(func);
-                    let exprType = checkExpressionCached(node.expression);
-                    
                     if (func.asteriskToken) {
                         // A generator does not need its return expressions checked against its return type.
                         // Instead, the yield expressions are checked against the element type.
@@ -10169,6 +10166,13 @@ module ts {
                         // for generators.
                         return;
                     }
+
+                    let signature = getSignatureFromDeclaration(func);
+                    let exprType = checkExpressionCached(node.expression);
+                    if (signature.typePredicate && exprType !== booleanType) {
+                        error(node.expression, Diagnostics.A_type_guard_function_can_only_return_a_boolean);
+                    }
+                    let returnType = getReturnTypeOfSignature(signature);
 
                     if (func.kind === SyntaxKind.SetAccessor) {
                         error(node.expression, Diagnostics.Setters_cannot_return_a_value);
