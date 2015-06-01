@@ -1885,15 +1885,13 @@ module ts {
             else if (parseOptional(returnToken)) {
                 signature.type = parseType();
             }
-            console.log((<any>ts).SyntaxKind[token])
             if (token === SyntaxKind.IsKeyword) {
                 let node = <TypePredicateNode>createNode(SyntaxKind.TypePredicate);
                 node.pos = signature.type.pos;
                 node.parameterName = <Identifier>(<TypeReferenceNode>signature.type).typeName;
-                
-                // Swallow IsKeyword
+
                 nextToken();
-                
+
                 node.type = parseType();
                 signature.type = undefined;
                 signature.typePredicate = finishNode(node);
