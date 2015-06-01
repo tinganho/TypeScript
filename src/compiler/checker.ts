@@ -1510,13 +1510,6 @@ module ts {
                     else if (type.flags & TypeFlags.StringLiteral) {
                         writer.writeStringLiteral((<StringLiteralType>type).text);
                     }
-//                    else if (type.flags & TypeFlags.TypeGuard) {
-//                        writer.writeStringLiteral((<TypeGuardType>type).parameterName);
-//                        writeSpace(writer);
-//                        writeKeyword(writer, SyntaxKind.IsKeyword);
-//                        writeSpace(writer);
-//                        writeType((<TypeGuardType>type).type, flags);
-//                    }
                     else {
                         // Should never get here
                         // { ... }
@@ -3199,8 +3192,7 @@ module ts {
             }
             return result;
         }
-        
-        /** Bookmark signatures comes from here */
+
         function getSignatureFromDeclaration(declaration: SignatureDeclaration): Signature {
             let links = getNodeLinks(declaration);
             if (!links.resolvedSignature) {
@@ -3840,47 +3832,6 @@ module ts {
             }
             return links.resolvedType;
         }
-        
-//        function getTypeGuardType(node: TypePredicateNode): Type {
-//            let type = <TypeGuardType>createType(TypeFlags.TypeGuard);
-//            let hasParameters = false;
-//            type.parameterIndex = -1;
-//            if (node.target) {
-//                let signature = <SignatureDeclaration>node.target.parent.parent;
-//                if (signature.parameters) {
-//                    for (let i = 0; i < signature.parameters.length; i++) {
-//                        let param = signature.parameters[i];
-//                        if (param.name.kind === SyntaxKind.Identifier && (<Identifier>param.name).text === node.target.text) {
-//                            type.parameterIndex = i;
-//                            break;
-//                        }
-//                    }
-//                    hasParameters = true;
-//                }
-//                type.parameterName = node.target.text;
-//            }
-//            if (hasParameters && type.parameterIndex === -1) {
-//                error(node.target, Diagnostics.Type_guard_target_must_have_a_matching_parameter);
-//            }
-//            if (node.type) {
-//                type.type = getTypeFromTypeNode(node.type);
-//                if (type.type.flags & TypeFlags.TypeGuard) {
-//                    error(node.type, Diagnostics.Can_t_define_a_type_guard_type_inside_a_type_guard_type);
-//                }
-//            }
-//            else {
-//                type.type = unknownType;
-//            }
-//            return type;
-//        }
-
-//        function getTypeFromTypeGuardTypeNode(node: TypePredicateNode): Type {
-//            let links = getNodeLinks(node);
-//            if (!links.resolvedType) {
-//                links.resolvedType = getTypeGuardType(node);
-//            }
-//            return links.resolvedType;
-//        }
 
         function getTypeFromTypeNode(node: TypeNode): Type {
             switch (node.kind) {
@@ -4104,10 +4055,6 @@ module ts {
                 if (type.flags & TypeFlags.Union) {
                     return getUnionType(instantiateList((<UnionType>type).types, mapper, instantiateType), /*noSubtypeReduction*/ true);
                 }
-//                if (type.flags & TypeFlags.TypeGuard) {
-//                    (<TypeGuardType>type).type = instantiateType((<TypeGuardType>type).type, mapper);
-//                    return type;
-//                }
             }
             return type;
         }
@@ -7110,17 +7057,7 @@ module ts {
                         : arg.kind === SyntaxKind.StringLiteral && !reportErrors
                             ? getStringLiteralType(<StringLiteral>arg)
                             : checkExpressionWithContextualType(arg, paramType, excludeArgument && excludeArgument[i] ? identityMapper : undefined);
-    	            
-                    if ((<ResolvedType>argType).callSignatures && 
-                        (<ResolvedType>argType).callSignatures[0] && 
-                        !(<ResolvedType>argType).callSignatures[0].typePredicate &&
-                        (<ResolvedType>paramType).callSignatures && 
-                        (<ResolvedType>paramType).callSignatures[0] && 
-                        (<ResolvedType>paramType).callSignatures[0].typePredicate) {
-                        
-                        error(arg, Diagnostics.A_non_type_guard_function_is_not_assignable_to_a_type_guard_function);
-                        return false;
-                    }
+
                     // Use argument expression as error location when reporting errors
                     if (!checkTypeRelatedTo(argType, paramType, relation, reportErrors ? arg : undefined,
                         Diagnostics.Argument_of_type_0_is_not_assignable_to_parameter_of_type_1)) {
@@ -7411,11 +7348,7 @@ module ts {
             // Function interface, since they have none by default. This is a bit of a leap of faith
             // that the user will not add any.
             let callSignatures = getSignaturesOfType(apparentType, SignatureKind.Call);
-            
-//            let symbol = getSymbolAtLocation((<CallExpression>node).expression);
-//            if(symbol && symbol.valueDeclaration && (<SignatureDeclaration>symbol.valueDeclaration).typePredicate) {
-//                console.log((<SignatureDeclaration>callSignatures[0].parameters[0].valueDeclaration))
-//            }
+
             let constructSignatures = getSignaturesOfType(apparentType, SignatureKind.Construct);
             // TS 1.0 spec: 4.12
             // If FuncExpr is of type Any, or of an object type that has no call or construct signatures
@@ -9458,7 +9391,7 @@ module ts {
                     checkIfNonVoidFunctionHasReturnExpressionsOrSingleThrowStatment(node, getTypeFromTypeNode(node.type));
                 }
             }
-            
+
             if (node.typePredicate) {
                 let links = getNodeLinks(node.typePredicate);
                 if (links.typePredicateParameterIndex >= 0) {
