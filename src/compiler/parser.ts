@@ -2015,12 +2015,7 @@ module ts {
         function parseParameterInitializer() {
             return parseInitializer(/*inParameter*/ true);
         }
-        
-        function nextTokenIsIsKeyword(): boolean {
-            nextToken();
-            return token === SyntaxKind.IsKeyword;
-        }
-        
+
         function fillSignature(
             returnToken: SyntaxKind,
             yieldAndGeneratorParameterContext: boolean,
