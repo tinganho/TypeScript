@@ -178,6 +178,12 @@ module ts {
         Generators_are_not_allowed_in_an_ambient_context: { code: 1220, category: DiagnosticCategory.Error, key: "Generators are not allowed in an ambient context." },
         An_overload_signature_cannot_be_declared_as_a_generator: { code: 1221, category: DiagnosticCategory.Error, key: "An overload signature cannot be declared as a generator." },
         _0_tag_already_specified: { code: 1222, category: DiagnosticCategory.Error, key: "'{0}' tag already specified." },
+        Type_declaration_expected: { code: 1223, category: DiagnosticCategory.Error, key: "Type declaration expected." },
+        A_non_type_guard_function_is_not_assignable_to_a_type_guard_function: { code: 1220, category: DiagnosticCategory.Error, key: "A non-type guard function is not assignable to a type guard function." },
+        A_type_guard_function_can_only_return_a_boolean: { code: 1224, category: DiagnosticCategory.Error, key: "A type-guard function can only return a boolean." },
+        Cannot_find_parameter_0: { code: 1225, category: DiagnosticCategory.Error, key: "Cannot find parameter '{0}'." },
+        Type_guard_annotation_0_is_not_assignable_to_1: { code: 1226, category: DiagnosticCategory.Error, key: "Type-guard annotation '{0}' is not assignable to '{1}'." },
+        Parameter_index_from_0_does_not_match_the_parameter_index_from_1: { code: 1227, category: DiagnosticCategory.Error, key: "Parameter index from '{0}' does not match the parameter index from '{1}'." },
         Duplicate_identifier_0: { code: 2300, category: DiagnosticCategory.Error, key: "Duplicate identifier '{0}'." },
         Initializer_of_instance_member_variable_0_cannot_reference_identifier_1_declared_in_the_constructor: { code: 2301, category: DiagnosticCategory.Error, key: "Initializer of instance member variable '{0}' cannot reference identifier '{1}' declared in the constructor." },
         Static_members_cannot_reference_class_type_parameters: { code: 2302, category: DiagnosticCategory.Error, key: "Static members cannot reference class type parameters." },
@@ -369,12 +375,8 @@ module ts {
         A_rest_element_cannot_contain_a_binding_pattern: { code: 2501, category: DiagnosticCategory.Error, key: "A rest element cannot contain a binding pattern." },
         _0_is_referenced_directly_or_indirectly_in_its_own_type_annotation: { code: 2502, category: DiagnosticCategory.Error, key: "'{0}' is referenced directly or indirectly in its own type annotation." },
         Cannot_find_namespace_0: { code: 2503, category: DiagnosticCategory.Error, key: "Cannot find namespace '{0}'." },
-<<<<<<< HEAD
         No_best_common_type_exists_among_yield_expressions: { code: 2504, category: DiagnosticCategory.Error, key: "No best common type exists among yield expressions." },
         A_generator_cannot_have_a_void_type_annotation: { code: 2505, category: DiagnosticCategory.Error, key: "A generator cannot have a 'void' type annotation." },
-=======
-        Type_guard_target_must_have_a_matching_parameter: { code: 2504, category: DiagnosticCategory.Error, key: "Type-guard target must have a matching parameter." },
->>>>>>> Adds custom type-guard function
         Import_declaration_0_is_using_private_name_1: { code: 4000, category: DiagnosticCategory.Error, key: "Import declaration '{0}' is using private name '{1}'." },
         Type_parameter_0_of_exported_class_has_or_is_using_private_name_1: { code: 4002, category: DiagnosticCategory.Error, key: "Type parameter '{0}' of exported class has or is using private name '{1}'." },
         Type_parameter_0_of_exported_interface_has_or_is_using_private_name_1: { code: 4004, category: DiagnosticCategory.Error, key: "Type parameter '{0}' of exported interface has or is using private name '{1}'." },

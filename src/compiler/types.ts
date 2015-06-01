@@ -1578,6 +1578,7 @@ module ts {
         hasReportedStatementInAmbientContext?: boolean;  // Cache boolean if we report statements in ambient context
         importOnRightSide?: Symbol;       // for import declarations - import that appear on the right side
         typePredicateParameterIndex?: number; // Index of type predicate parameter
+        typeFromTypePredicate?: Type;     // Type from TypePredicate
     }
 
     export const enum TypeFlags {

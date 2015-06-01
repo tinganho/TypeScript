@@ -2855,11 +2855,7 @@ module ts {
                     return signature;
                 });
             }
-<<<<<<< HEAD
-            return [createSignature(undefined, classType.localTypeParameters, emptyArray, classType, 0, false, false)];
-=======
-            return [createSignature(undefined, classType.typeParameters, emptyArray, classType, undefined, 0, false, false)];
->>>>>>> Save
+            return [createSignature(undefined, classType.localTypeParameters, emptyArray, classType, undefined, 0, false, false)];
         }
 
         function createTupleTypeMemberSymbols(memberTypes: Type[]): SymbolTable {
@@ -3237,22 +3233,28 @@ module ts {
                     returnType = booleanType;
                     
                     let typePredicateNode = declaration.typePredicate;
-                    let parameterIndex = -1;
-                    if (declaration.parameters) {
-                        for (let i = 0; i < declaration.parameters.length; i++) {
-                            let param = declaration.parameters[i];
-                            if (param.name.kind === SyntaxKind.Identifier && 
-                                (<Identifier>param.name).text === declaration.typePredicate.parameterName.text) {
-                                
-                                parameterIndex = i;
-                                break;
+                    let links = getNodeLinks(typePredicateNode);
+                    if (!links.typePredicateParameterIndex) {
+                        links.typePredicateParameterIndex = -1;
+                        if (declaration.parameters) {
+                            for (let i = 0; i < declaration.parameters.length; i++) {
+                                let param = declaration.parameters[i];
+                                if (param.name.kind === SyntaxKind.Identifier && 
+                                    (<Identifier>param.name).text === declaration.typePredicate.parameterName.text) {
+                                    
+                                    links.typePredicateParameterIndex = i;
+                                    break;
+                                }
                             }
                         }
                     }
+                    if (!links.typeFromTypePredicate) {
+                        links.typeFromTypePredicate = getTypeFromTypeNode(typePredicateNode.type);
+                    }
                     typePredicate = {
                       parameterName: typePredicateNode.parameterName ? typePredicateNode.parameterName.text : undefined,
-                      parameterIndex: typePredicateNode.parameterName ? parameterIndex : undefined,
-                      type: getTypeFromTypeNode(typePredicateNode.type)
+                      parameterIndex: typePredicateNode.parameterName ? links.typePredicateParameterIndex : undefined,
+                      type: links.typeFromTypePredicate
                     };
                 }
                 else if (classType) {
@@ -4254,27 +4256,12 @@ module ts {
                     if (source === nullType && target !== undefinedType) return Ternary.True;
                     if (source.flags & TypeFlags.Enum && target === numberType) return Ternary.True;
                     if (source.flags & TypeFlags.StringLiteral && target === stringType) return Ternary.True;
-//                    if (source.flags & TypeFlags.TypeGuard && target.flags & TypeFlags.Boolean) return Ternary.True;
                     if (relation === assignableRelation) {
                         if (source.flags & TypeFlags.Any) return Ternary.True;
                         if (source === numberType && target.flags & TypeFlags.Enum) return Ternary.True;
                     }
                 }
                 let saveErrorInfo = errorInfo;
-//                if (source.flags & TypeFlags.TypeGuard && target.flags & TypeFlags.TypeGuard) {
-//                    if ((<TypeGuardType>source).parameterIndex &&
-//                        (<TypeGuardType>target).parameterIndex &&
-//                        (<TypeGuardType>source).parameterIndex !== (<TypeGuardType>target).parameterIndex) {
-//                            return Ternary.False;
-//                    }
-//                    if ((<TypeGuardType>source).parameterIndex && !(<TypeGuardType>target).parameterIndex ||
-//                        !(<TypeGuardType>source).parameterIndex && (<TypeGuardType>target).parameterIndex) {
-//                            return Ternary.False;
-//                    }
-//                    if (result = isRelatedTo((<TypeGuardType>source).type, (<TypeGuardType>target).type, reportErrors, headMessage)) {
-//                        return result;
-//                    }
-//                }
                 if (source.flags & TypeFlags.Union || target.flags & TypeFlags.Union) {
                     if (relation === identityRelation) {
                         if (source.flags & TypeFlags.Union && target.flags & TypeFlags.Union) {
@@ -4714,6 +4701,43 @@ module ts {
                     }
                     result &= related;
                 }
+
+                if (source.typePredicate && target.typePredicate) {
+                    if (source.typePredicate.parameterIndex !== target.typePredicate.parameterIndex || 
+                        source.typePredicate.type.symbol !== target.typePredicate.type.symbol) {
+
+                        if (reportErrors) {
+                            let sourceParamText = source.typePredicate.parameterName;
+                            let targetParamText = target.typePredicate.parameterName;
+                            let sourceTypeText = typeToString(source.typePredicate.type);
+                            let targetTypeText = typeToString(target.typePredicate.type);
+
+                            if (source.typePredicate.parameterIndex !== target.typePredicate.parameterIndex) {
+                                reportError(Diagnostics.Parameter_index_from_0_does_not_match_the_parameter_index_from_1, 
+                                    sourceParamText,
+                                    targetParamText);
+                            }
+                            if (source.typePredicate.type.symbol !== target.typePredicate.type.symbol) {
+                                reportError(Diagnostics.Type_0_is_not_assignable_to_type_1, 
+                                    sourceTypeText,
+                                    targetTypeText);
+                            }
+
+                            reportError(Diagnostics.Type_guard_annotation_0_is_not_assignable_to_1,
+                                `${sourceParamText} is ${sourceTypeText}`,
+                                `${targetParamText} is ${targetTypeText}`);
+                        }
+
+                        return Ternary.False;
+                    }
+                }
+                else if (!source.typePredicate && target.typePredicate) {
+                    if (reportErrors) {
+                        reportError(Diagnostics.A_non_type_guard_function_is_not_assignable_to_a_type_guard_function);
+                    }
+                    return Ternary.False;
+                }
+
                 let t = getReturnTypeOfSignature(target);
                 if (t === voidType) return result;
                 let s = getReturnTypeOfSignature(source);
@@ -5141,12 +5165,6 @@ module ts {
                 if (source === anyFunctionType) {
                     return;
                 }
-//                if (target.flags & TypeFlags.TypeGuard) {
-//                    target = (<TypeGuardType>target).type;
-//                }
-//                if (source.flags & TypeFlags.TypeGuard) {
-//                    source = (<TypeGuardType>source).type;
-//                }
                 if (target.flags & TypeFlags.TypeParameter) {
                     // If target is a type parameter, make an inference
                     let typeParameters = context.typeParameters;
@@ -5252,6 +5270,13 @@ module ts {
 
             function inferFromSignature(source: Signature, target: Signature) {
                 forEachMatchingParameterType(source, target, inferFromTypes);
+                if (source.typePredicate &&
+                    target.typePredicate && 
+                    target.typePredicate.parameterIndex === source.typePredicate.parameterIndex) {
+
+                    inferFromTypes(source.typePredicate.type, target.typePredicate.type);
+                    return;
+                }
                 inferFromTypes(getReturnTypeOfSignature(source), getReturnTypeOfSignature(target));
             }
 
@@ -5669,7 +5694,6 @@ module ts {
             }
             
             function narrowTypeByTypePredicate(type: Type, expr: CallExpression, assumeTrue: boolean): Type {
-                // Check that type is not any, assumed result is true.
                 if (type.flags & TypeFlags.Any || !assumeTrue) {
                     return type;
                 }
@@ -5678,7 +5702,6 @@ module ts {
                     if (expr.arguments && expr.arguments[signature.typePredicate.parameterIndex]) {
                         if (getSymbolAtLocation(expr.arguments[signature.typePredicate.parameterIndex]) === symbol) {
                             if (isTypeSubtypeOf(signature.typePredicate.type, type)) {
-                                console.log('iofjwoijeiofwj', signature.typePredicate.type)
                                 return signature.typePredicate.type;
                             }
                             if (type.flags & TypeFlags.Union) {
@@ -7034,9 +7057,6 @@ module ts {
                         let mapper = excludeArgument && excludeArgument[i] !== undefined ? identityMapper : inferenceMapper;
                         argType = checkExpressionWithContextualType(arg, paramType, mapper);
                     }
-//                    if(signature.typePredicate) {
-//                        console.log(argType);
-//                    }
                     inferTypes(context, argType, paramType);
                 }
             }
@@ -7090,7 +7110,17 @@ module ts {
                         : arg.kind === SyntaxKind.StringLiteral && !reportErrors
                             ? getStringLiteralType(<StringLiteral>arg)
                             : checkExpressionWithContextualType(arg, paramType, excludeArgument && excludeArgument[i] ? identityMapper : undefined);
-
+    	            
+                    if ((<ResolvedType>argType).callSignatures && 
+                        (<ResolvedType>argType).callSignatures[0] && 
+                        !(<ResolvedType>argType).callSignatures[0].typePredicate &&
+                        (<ResolvedType>paramType).callSignatures && 
+                        (<ResolvedType>paramType).callSignatures[0] && 
+                        (<ResolvedType>paramType).callSignatures[0].typePredicate) {
+                        
+                        error(arg, Diagnostics.A_non_type_guard_function_is_not_assignable_to_a_type_guard_function);
+                        return false;
+                    }
                     // Use argument expression as error location when reporting errors
                     if (!checkTypeRelatedTo(argType, paramType, relation, reportErrors ? arg : undefined,
                         Diagnostics.Argument_of_type_0_is_not_assignable_to_parameter_of_type_1)) {
@@ -7382,7 +7412,7 @@ module ts {
             // that the user will not add any.
             let callSignatures = getSignaturesOfType(apparentType, SignatureKind.Call);
             
-            let symbol = getSymbolAtLocation((<CallExpression>node).expression);
+//            let symbol = getSymbolAtLocation((<CallExpression>node).expression);
 //            if(symbol && symbol.valueDeclaration && (<SignatureDeclaration>symbol.valueDeclaration).typePredicate) {
 //                console.log((<SignatureDeclaration>callSignatures[0].parameters[0].valueDeclaration))
 //            }
@@ -9427,16 +9457,20 @@ module ts {
                 if (!isAccessor(node.kind) && !node.asteriskToken) {
                     checkIfNonVoidFunctionHasReturnExpressionsOrSingleThrowStatment(node, getTypeFromTypeNode(node.type));
                 }
-                if (node.type.kind === SyntaxKind.TypePredicate) {
-//                    let type = getTypeFromTypeNode(<TypePredicateNode>node.type);
-//                    if (type.flags & TypeFlags.TypeGuard && ~(<TypeGuardType>type).parameterIndex) {
-//                        checkTypeAssignableTo(
-//                            (<TypeGuardType>type).type,
-//                            getTypeAtLocation(node.parameters[(<TypeGuardType>type).parameterIndex]),
-//                            (<TypePredicateNode>node.type).type, 
-//                            Diagnostics.Type_0_is_not_assignable_to_type_1
-//                        );
-//                    }
+            }
+            
+            if (node.typePredicate) {
+                let links = getNodeLinks(node.typePredicate);
+                if (links.typePredicateParameterIndex >= 0) {
+                    checkTypeAssignableTo(
+                        links.typeFromTypePredicate,
+                        getTypeAtLocation(node.parameters[links.typePredicateParameterIndex]),
+                        node.typePredicate.type);
+                }
+                else if(node.typePredicate.parameterName) {
+                    error(node.typePredicate.parameterName, 
+                        Diagnostics.Cannot_find_parameter_0, 
+                        node.typePredicate.parameterName.text);
                 }
             }
 
@@ -10192,9 +10226,8 @@ module ts {
             if (node.expression) {
                 let func = getContainingFunction(node);
                 if (func) {
-                    let returnType = getReturnTypeOfSignature(getSignatureFromDeclaration(func));
+                    let signature = getSignatureFromDeclaration(func);
                     let exprType = checkExpressionCached(node.expression);
-<<<<<<< HEAD
                     
                     if (func.asteriskToken) {
                         // A generator does not need its return expressions checked against its return type.
@@ -10204,14 +10237,6 @@ module ts {
                         return;
                     }
 
-                    if (returnType.flags & TypeFlags.TypeGuard && exprType === booleanType) {
-                        return;
-                    }
-=======
-//                    if (returnType.flags & TypeFlags.TypeGuard && exprType === booleanType) {
-//                        return;
-//                    }
->>>>>>> Save
                     if (func.kind === SyntaxKind.SetAccessor) {
                         error(node.expression, Diagnostics.Setters_cannot_return_a_value);
                     }

@@ -695,6 +695,26 @@
         "category": "Error",
         "code": 1221
     },
+    "A non-type guard function is not assignable to a type guard function.": {
+        "category": "Error",
+        "code": 1222
+    },
+    "A type-guard function can only return a boolean.": {
+        "category": "Error",
+        "code": 1223
+    },
+    "Cannot find parameter '{0}'.": {
+        "category": "Error",
+        "code": 1224
+    },
+    "Type-guard annotation '{0}' is not assignable to '{1}'.": {
+        "category": "Error",
+        "code": 1225
+    },
+    "Parameter index from '{0}' does not match the parameter index from '{1}'.": {
+        "category": "Error",
+        "code": 1226
+    },
 
 
     "'{0}' tag already specified.": {
@@ -1469,17 +1489,10 @@
         "category": "Error",
         "code": 2504
     },
-<<<<<<< HEAD
     "A generator cannot have a 'void' type annotation.": {
         "category": "Error",
         "code": 2505
     },
-=======
-    "Type-guard target must have a matching parameter.": {
-        "category": "Error",
-        "code": 2504
-    },
->>>>>>> Adds custom type-guard function
 
     "Import declaration '{0}' is using private name '{1}'.": {
         "category": "Error",
