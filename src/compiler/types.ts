@@ -1254,7 +1254,7 @@ module ts {
     
     export interface TypePredicate {
         parameterName: string;
-        parameterIndex?: number; // Call expression argument
+        parameterIndex?: number;
         type: Type;
     }
 
