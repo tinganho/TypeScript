@@ -143,3 +143,17 @@ acceptingTypeGuardFunction(isA);
 >acceptingTypeGuardFunction : (p1: (item: any) => boolean) => any
 >isA : (p1: any) => boolean
 
+let union2: C | B;
+>union2 : B | C
+>C : C
+>B : B
+
+let union3: boolean | B = isA(union2) || union2;
+>union3 : boolean | B
+>B : B
+>isA(union2) || union2 : boolean | B
+>isA(union2) : boolean
+>isA : (p1: any) => boolean
+>union2 : B | C
+>union2 : B
+

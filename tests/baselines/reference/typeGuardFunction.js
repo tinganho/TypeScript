@@ -53,6 +53,8 @@ acceptingBoolean(isA(a));
 declare function acceptingTypeGuardFunction(p1: (item) => item is A);
 acceptingTypeGuardFunction(isA);
 
+let union2: C | B;
+let union3: boolean | B = isA(union2) || union2;
 
 //// [typeGuardFunction.js]
 var __extends = (this && this.__extends) || function (d, b) {
@@ -99,3 +101,5 @@ if (isC_multipleParams(a, 0)) {
 }
 acceptingBoolean(isA(a));
 acceptingTypeGuardFunction(isA);
+var union2;
+var union3 = isA(union2) || union2;

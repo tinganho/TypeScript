@@ -5641,10 +5641,16 @@ module ts {
             }
 
             function narrowTypeByTypePredicate(type: Type, expr: CallExpression, assumeTrue: boolean): Type {
-                if (type.flags & TypeFlags.Any || !assumeTrue) {
+                if (type.flags & TypeFlags.Any) {
                     return type;
                 }
                 let signature = getResolvedSignature(expr);
+                if (!assumeTrue) {
+                    if (type.flags & TypeFlags.Union && signature && signature.typePredicate) {
+                        return getUnionType(filter((<UnionType>type).types, t => !isTypeSubtypeOf(t, signature.typePredicate.type)));
+                    }
+                    return type;
+                }
                 if (signature && signature.typePredicate) {
                     if (expr.arguments && expr.arguments[signature.typePredicate.parameterIndex]) {
                         if (getSymbolAtLocation(expr.arguments[signature.typePredicate.parameterIndex]) === symbol) {

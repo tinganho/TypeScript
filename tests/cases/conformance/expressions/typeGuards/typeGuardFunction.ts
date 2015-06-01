@@ -51,3 +51,6 @@ acceptingBoolean(isA(a));
 // Type predicates with different parameter name.
 declare function acceptingTypeGuardFunction(p1: (item) => item is A);
 acceptingTypeGuardFunction(isA);
+
+let union2: C | B;
+let union3: boolean | B = isA(union2) || union2;

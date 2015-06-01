@@ -130,3 +130,15 @@ acceptingTypeGuardFunction(isA);
 >acceptingTypeGuardFunction : Symbol(acceptingTypeGuardFunction, Decl(typeGuardFunction.ts, 48, 25))
 >isA : Symbol(isA, Decl(typeGuardFunction.ts, 11, 1))
 
+let union2: C | B;
+>union2 : Symbol(union2, Decl(typeGuardFunction.ts, 54, 3))
+>C : Symbol(C, Decl(typeGuardFunction.ts, 7, 1))
+>B : Symbol(B, Decl(typeGuardFunction.ts, 3, 1))
+
+let union3: boolean | B = isA(union2) || union2;
+>union3 : Symbol(union3, Decl(typeGuardFunction.ts, 55, 3))
+>B : Symbol(B, Decl(typeGuardFunction.ts, 3, 1))
+>isA : Symbol(isA, Decl(typeGuardFunction.ts, 11, 1))
+>union2 : Symbol(union2, Decl(typeGuardFunction.ts, 54, 3))
+>union2 : Symbol(union2, Decl(typeGuardFunction.ts, 54, 3))
+
