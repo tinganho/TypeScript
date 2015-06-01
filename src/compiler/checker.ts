@@ -5639,7 +5639,7 @@ module ts {
 
                 return type;
             }
-            
+
             function narrowTypeByTypePredicate(type: Type, expr: CallExpression, assumeTrue: boolean): Type {
                 if (type.flags & TypeFlags.Any || !assumeTrue) {
                     return type;
