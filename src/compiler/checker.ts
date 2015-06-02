@@ -3223,25 +3223,13 @@ module ts {
                 let typePredicate: TypePredicate;
                 if (declaration.typePredicate) {
                     returnType = booleanType;
-                    
                     let typePredicateNode = declaration.typePredicate;
                     let links = getNodeLinks(typePredicateNode);
                     if (!links.typePredicateParameterIndex) {
-                        links.typePredicateParameterIndex = -1;
-                        if (declaration.parameters) {
-                            for (let i = 0; i < declaration.parameters.length; i++) {
-                                let param = declaration.parameters[i];
-                                if (param.name.kind === SyntaxKind.Identifier && 
-                                    (<Identifier>param.name).text === declaration.typePredicate.parameterName.text) {
-                                    
-                                    links.typePredicateParameterIndex = i;
-                                    break;
-                                }
-                            }
-                        }
+                        links.typePredicateParameterIndex = getTypePredicateParameterIndex(declaration.parameters, typePredicateNode.parameterName);
                     }
                     if (!links.typeFromTypePredicate) {
-                        links.typeFromTypePredicate = getTypeFromTypeNode(typePredicateNode.type);
+                        links.typeFromTypePredicate = getTypeFromTypeNode(declaration.typePredicate.type);
                     }
                     typePredicate = {
                       parameterName: typePredicateNode.parameterName ? typePredicateNode.parameterName.text : undefined,
@@ -5646,12 +5634,12 @@ module ts {
                 }
                 let signature = getResolvedSignature(expr);
                 if (!assumeTrue) {
-                    if (type.flags & TypeFlags.Union && signature && signature.typePredicate) {
+                    if (type.flags & TypeFlags.Union && signature.typePredicate) {
                         return getUnionType(filter((<UnionType>type).types, t => !isTypeSubtypeOf(t, signature.typePredicate.type)));
                     }
                     return type;
                 }
-                if (signature && signature.typePredicate) {
+                if (signature.typePredicate) {
                     if (expr.arguments && expr.arguments[signature.typePredicate.parameterIndex]) {
                         if (getSymbolAtLocation(expr.arguments[signature.typePredicate.parameterIndex]) === symbol) {
                             if (isTypeSubtypeOf(signature.typePredicate.type, type)) {
@@ -8573,6 +8561,20 @@ module ts {
                 node.kind === SyntaxKind.FunctionExpression;
         }
 
+        function getTypePredicateParameterIndex(parameterList: NodeArray<ParameterDeclaration>, parameter: Identifier): number {
+            let index = -1;
+            if (parameterList) {
+                for (let i = 0; i < parameterList.length; i++) {
+                    let param = parameterList[i];
+                    if (param.name.kind === SyntaxKind.Identifier &&
+                        (<Identifier>param.name).text === parameter.text) {
+
+                        return i;
+                    }
+                }
+            }
+        }
+
         function checkSignatureDeclaration(node: SignatureDeclaration) {
             // Grammar checking
             if (node.kind === SyntaxKind.IndexSignature) {
@@ -8591,6 +8593,27 @@ module ts {
 
             if (node.type) {
                 checkSourceElement(node.type);
+            }
+
+            if (node.typePredicate) {
+                let links = getNodeLinks(node.typePredicate);
+                if (!links.typePredicateParameterIndex) {
+                    links.typePredicateParameterIndex = getTypePredicateParameterIndex(node.parameters, node.typePredicate.parameterName);
+                }
+                if (!links.typeFromTypePredicate) {
+                    links.typeFromTypePredicate = getTypeFromTypeNode(node.typePredicate.type);
+                }
+                if (links.typePredicateParameterIndex >= 0) {
+                    checkTypeAssignableTo(
+                        links.typeFromTypePredicate,
+                        getTypeAtLocation(node.parameters[links.typePredicateParameterIndex]),
+                        node.typePredicate.type);
+                }
+                else if(node.typePredicate.parameterName) {
+                    error(node.typePredicate.parameterName,
+                        Diagnostics.Cannot_find_parameter_0,
+                        node.typePredicate.parameterName.text);
+                }
             }
 
             if (produceDiagnostics) {
@@ -9395,21 +9418,6 @@ module ts {
             if (node.type) {
                 if (!isAccessor(node.kind) && !node.asteriskToken) {
                     checkIfNonVoidFunctionHasReturnExpressionsOrSingleThrowStatment(node, getTypeFromTypeNode(node.type));
-                }
-            }
-
-            if (node.typePredicate) {
-                let links = getNodeLinks(node.typePredicate);
-                if (links.typePredicateParameterIndex >= 0) {
-                    checkTypeAssignableTo(
-                        links.typeFromTypePredicate,
-                        getTypeAtLocation(node.parameters[links.typePredicateParameterIndex]),
-                        node.typePredicate.type);
-                }
-                else if(node.typePredicate.parameterName) {
-                    error(node.typePredicate.parameterName, 
-                        Diagnostics.Cannot_find_parameter_0, 
-                        node.typePredicate.parameterName.text);
                 }
             }
 
