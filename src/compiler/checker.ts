@@ -3225,7 +3225,7 @@ module ts {
                     returnType = booleanType;
                     let typePredicateNode = declaration.typePredicate;
                     let links = getNodeLinks(typePredicateNode);
-                    if (!links.typePredicateParameterIndex) {
+                    if (links.typePredicateParameterIndex === undefined) {
                         links.typePredicateParameterIndex = getTypePredicateParameterIndex(declaration.parameters, typePredicateNode.parameterName);
                     }
                     if (!links.typeFromTypePredicate) {
@@ -8597,7 +8597,7 @@ module ts {
 
             if (node.typePredicate) {
                 let links = getNodeLinks(node.typePredicate);
-                if (!links.typePredicateParameterIndex) {
+                if (links.typePredicateParameterIndex === undefined) {
                     links.typePredicateParameterIndex = getTypePredicateParameterIndex(node.parameters, node.typePredicate.parameterName);
                 }
                 if (!links.typeFromTypePredicate) {
