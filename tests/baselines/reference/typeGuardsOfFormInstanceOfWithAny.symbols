@@ -1,0 +1,18 @@
+=== tests/cases/conformance/expressions/typeGuards/typeGuardsOfFormInstanceOfWithAny.ts ===
+class A {}
+>A : Symbol(A, Decl(typeGuardsOfFormInstanceOfWithAny.ts, 0, 0))
+
+var x: any;
+>x : Symbol(x, Decl(typeGuardsOfFormInstanceOfWithAny.ts, 2, 3))
+
+if (x instanceof A) {
+>x : Symbol(x, Decl(typeGuardsOfFormInstanceOfWithAny.ts, 2, 3))
+>A : Symbol(A, Decl(typeGuardsOfFormInstanceOfWithAny.ts, 0, 0))
+
+    x; // A
+>x : Symbol(x, Decl(typeGuardsOfFormInstanceOfWithAny.ts, 2, 3))
+}
+else {
+    x; // any
+>x : Symbol(x, Decl(typeGuardsOfFormInstanceOfWithAny.ts, 2, 3))
+}

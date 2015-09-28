@@ -1,0 +1,25 @@
+=== tests/cases/conformance/expressions/typeGuards/typeGuardsOfFormTypeGuardFunction.ts ===
+function f(x: any): x is string {
+>f : (x: any) => x is string
+>x : any
+>x : any
+
+    return true;
+>true : boolean
+}
+
+var x: any;
+>x : any
+
+if (f(x)) {
+>f(x) : boolean
+>f : (x: any) => x is string
+>x : any
+
+    x; // string
+>x : string
+}
+else {
+    x; // any
+>x : any
+}

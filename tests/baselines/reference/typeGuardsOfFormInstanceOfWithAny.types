@@ -1,0 +1,19 @@
+=== tests/cases/conformance/expressions/typeGuards/typeGuardsOfFormInstanceOfWithAny.ts ===
+class A {}
+>A : A
+
+var x: any;
+>x : any
+
+if (x instanceof A) {
+>x instanceof A : boolean
+>x : any
+>A : typeof A
+
+    x; // A
+>x : A
+}
+else {
+    x; // any
+>x : any
+}

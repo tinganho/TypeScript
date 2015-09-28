@@ -1,12 +1,5 @@
 var x: any = { p: 0 };
 
-if (x instanceof Object) {
-    x.p; // No error, type any unaffected by instanceof type guard
-}
-else {
-    x.p; // No error, type any unaffected by instanceof type guard
-}
-
 if (typeof x === "string") {
     x.p; // Error, type any narrowed by primitive type check
 }
