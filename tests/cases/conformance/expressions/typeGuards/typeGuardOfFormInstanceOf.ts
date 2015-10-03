@@ -17,14 +17,22 @@ var str: string;
 var num: number;
 var strOrNum: string | number;
 
-var c1Orc2: C1 | C2;
-str = c1Orc2 instanceof C1 && c1Orc2.p1; // C1
-num = c1Orc2 instanceof C2 && c1Orc2.p2; // C2
-str = c1Orc2 instanceof D1 && c1Orc2.p1; // D1
-num = c1Orc2 instanceof D1 && c1Orc2.p3; // D1
+var ctor1: C1 | C2;
+str = ctor1 instanceof C1 && ctor1.p1; // C1
+num = ctor1 instanceof C2 && ctor1.p2; // C2
+str = ctor1 instanceof D1 && ctor1.p1; // D1
+num = ctor1 instanceof D1 && ctor1.p3; // D1
 
-var c2Ord1: C2 | D1;
-num = c2Ord1 instanceof C2 && c2Ord1.p2; // C2
-num = c2Ord1 instanceof D1 && c2Ord1.p3; // D1
-str = c2Ord1 instanceof D1 && c2Ord1.p1; // D1
-var r2: D1 | C2 = c2Ord1 instanceof C1 && c2Ord1; // C2 | D1
+var ctor2: C2 | D1;
+num = ctor2 instanceof C2 && ctor2.p2; // C2
+num = ctor2 instanceof D1 && ctor2.p3; // D1
+str = ctor2 instanceof D1 && ctor2.p1; // D1
+var r2: D1 | C2 = ctor2 instanceof C1 && ctor2; // C2 | D1
+
+var ctor3: C1 | C2;
+if (ctor3 instanceof C1) {
+    ctor3.p1; // C1
+}
+else {
+    ctor3.p2; // C2
+}
