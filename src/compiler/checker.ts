@@ -5976,14 +5976,14 @@ namespace ts {
                     }
                 }
 
-                if (!assumeTrue) {
-                    if (type.flags & TypeFlags.Union) {
-                        return getUnionType(filter((<UnionType>type).types, t => !isTypeSubtypeOf(t, targetType)));
-                    }
-                    return type;
-                }
-
                 if (targetType) {
+                    if (!assumeTrue) {
+                        if (type.flags & TypeFlags.Union) {
+                            return getUnionType(filter((<UnionType>type).types, t => !isTypeSubtypeOf(t, targetType)));
+                        }
+                        return type;
+                    }
+                    
                     return getNarrowedType(type, targetType);
                 }
 
@@ -5995,7 +5995,7 @@ namespace ts {
                 if (isTypeSubtypeOf(narrowedTypeCandidate, originalType)) {
                     return narrowedTypeCandidate;
                 }
-                // If the current type is a union type, remove all constituents that aren't subtypes of the target.
+                // If the original type is a union type, remove all constituents that aren't subtypes of the narrowed type candidate.
                 if (originalType.flags & TypeFlags.Union) {
                     return getUnionType(filter((<UnionType>originalType).types, t => isTypeSubtypeOf(t, narrowedTypeCandidate)));
                 }

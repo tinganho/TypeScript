@@ -13,6 +13,9 @@ class C2 {
 class D1 extends C1 {
     p3: number;
 }
+class C3 {
+    p4: number;
+}
 var str: string;
 var num: number;
 var strOrNum: string | number;
@@ -35,4 +38,30 @@ if (ctor3 instanceof C1) {
 }
 else {
     ctor3.p2; // C2
+}
+
+var ctor4: C1 | C2 | C3;
+if (ctor4 instanceof C1) {
+    ctor4.p1; // C1
+}
+else if (ctor4 instanceof C2) {
+    ctor4.p2; // C2
+}
+else {
+    ctor4.p4; // C3
+}
+
+var ctor5: C1 | D1 | C2;
+if (ctor5 instanceof C1) {
+    ctor5.p1; // C1
+}
+else {
+    ctor5.p2; // C2
+}
+
+var ctor6: C1 | C2 | C3;
+if (ctor6 instanceof C1 || ctor6 instanceof C2) {
+}
+else {
+    ctor6.p4; // C3
 }
